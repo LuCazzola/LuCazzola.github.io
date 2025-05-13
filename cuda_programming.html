@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Patua+One&display=swap" rel="stylesheet">
+
+  <title>Cuda programming</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="images/favicons/favicon-32x32.png">
+  <link rel="stylesheet" href="style.css">
+  
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pseudocode@latest/build/pseudocode.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/pseudocode@latest/build/pseudocode.min.js"></script>
+  <script async="" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML" type="text/javascript"></script>
+</head>
+
+<body>
+
+  <!-- NAVBAR DESKTOP -->
+
+  <div class="navbar-desktop">
+    <a class="a-light" style="margin-right: 5%;" href="index.html">HOME</a>
+
+    <a class="a-light" style="margin-right: 5%;" href="projects.html">PROJECTS</a>
+
+    <a class="a-light" style="margin-right: 5%;" href="bio.html">ABOUT ME</a>
+
+    <a class="a-light" style="margin-right: 5%;" href="contacts.html">CONTACT</a>
+
+  </div>
+
+  <!-- NAVBAR MOBILE -->
+
+  <div class="navbar-mobile">
+    <a class="a-light" style="margin-bottom: 8px;" href="index.html">HOME</a>
+
+    <a class="a-light" style="margin-bottom: 8px;" href="projects.html">PROJECTS</a>
+
+    <a class="a-light" style="margin-bottom: 8px;" href="bio.html">ABOUT ME</a>
+
+    <a class="a-light" style="margin-bottom: 8px;" href="contacts.html">CONTACT</a>
+
+  </div>
+
+
+  <div class="empty-space"></div>
+
+  <div class="section-03">
+    <div style="max-width: 600px;">
+      <h2 style="margin-bottom: 16px;">CUDA programming</h2>
+      <h3 style="margin-bottom: 16px;">exploring parallel computation on GPU</h3>
+    </div>
+
+    <div class="empty-space"></div>
+
+    <div class="project-overview">
+      <h4>Project overview</h4>
+      <div style="height: 16px; border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+          "> </div>
+      <div style="height:16px;"></div>
+      <div class="project-overview-content">
+        <div class="project-topic">
+          <h3>Problems</h3>
+          <p>
+            Behind the scenes of whatever Deep Learning application there's nothing else than billions over billions of matrix multiplications and operations requiring an high degree of parallelization.
+            <br><br>
+            The piece of hardware which enabled the AI revolution is the <b>GPU</b>, making feasible training models in a decent ammount of time.
+            <br><br>
+            <b>NVIDIA</b> is the most popular provider of GPUs worldwide, and <b>CUDA</b> is the programming model to work with their devces.
+          </p>
+        </div>
+        <div class="project-topic">
+          <h3>Methods</h3>
+          <p>
+            Parallel computation<br><br>
+            Matrix transposition<br><br>
+            Benchmarking<br><br>
+          </p>
+        </div>
+        <div class="project-topic">
+          <h3>Tools</h3>
+          <p>
+            C<br><br>
+            Makefile<br><br>
+            Cuda<br><br>
+          </p>
+        </div>
+        <div class="project-topic">
+          <h3>Goals</h3>
+          <p>
+            Explore the possibilities provided by the Cuda programming model analyzing a case study : <b>matrix transposition</b>.
+            <br><br>
+            The built application will be testing implementations built for CPU only and compare them with the GPU counterpart, analyzing the system behaviour on both instances.
+            <br><br>
+            After this preliminary task, we'll switch to another problem : <b>Convolution on images</b>, and again parallelize computation with GPU.
+            <div></div>
+          </p>
+        </div>
+      </div>
+      <div style="height: 16px; border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+          "> </div>
+      <div style="height:16px;"></div>
+      <h5> Developed in collaboration with Christian Dalvit (2024).</h5>
+    </div>
+
+    <div class="empty-space"></div>
+
+    <div style="max-width: 750px;">
+      <div class="empty-space"></div>
+      <h4 style="margin-bottom: 16px;">Context</h4>
+      <p>
+        This project was part of the <b>GPU computing course</b> at University of Trento a.y. 2023/2024, on my first year of Master's degree in AI systems.
+        <br><br>
+        This represented my first times working on a parallel computing context, other than some simple multi-processor / multi-thread applications i've done in the past.
+        <br><br>
+        I also had the pleasure to be taught by an <b>ex NVIDIA employee</b> professor <b><a href="https://scholar.google.it/citations?user=JblQamAAAAAJ&hl=it" class="a-light">Flavio Vella</a></b>.
+      </p>
+      <div class="empty-space"></div>
+      <img class="image-general" src="images/GPUcomputing/NVIDIA_logo.svg" style="width: 50%;" alt="">
+
+    </div>
+  </div>
+
+  <div class="empty-space-big"></div>
+
+  <!-- PROCESS -->
+
+  <div style="background-color: #dbf1ff">
+    <div class="empty-space-big"></div>
+    <div class="section-03">
+      <h3>Design process</h3>
+
+      <div class="empty-space"></div>
+
+      <div class="project-overview-content">
+        <div class="circle">
+          <div class="circle-number"></div>
+          <h3>1</h3>
+          <h4>Problem analysis : Matrix transposition</h4>
+        </div>
+        <div class="circle">
+          <div class="circle-number"></div>
+          <h3>2</h3>
+          <h4>CPU & GPU Matrix transposition</h4>
+        </div>
+        <div class="circle">
+          <div class="circle-number"></div>
+          <h3>3</h3>
+          <h4>Problem analysis : Convolution on images</h4>
+        </div>
+        <div class="circle">
+          <div class="circle-number"></div>
+          <h3>4</h3>
+          <h4>GPU implementations for convolution</h4>
+        </div>
+      </div>
+    </div>
+
+    <div class="empty-space-big"></div>
+
+  </div>
+
+  <div class="empty-space-big"></div>
+
+  <div class="section-03">
+    <div style="max-width: 750px;">
+      <h4 style="margin-bottom: 16px;">The (first) problem : Matrix transposition</h4>
+      <p>
+        Computing the <a href="https://en.wikipedia.org/wiki/Transpose">transpose</a> of a given matrix \(X^{n,m}\) having \(n\) rows and \(m\) columns means nothing more than computing \(t(X^{n,m}) = Y^{m,n} \) such that the first row of
+        \(X\) becomes the first column of \(Y\), same thing for the second row and second column, etc. etc...
+        <br><br>
+        <img class="image-general" src="images/GPUcomputing/matrix_transposition.png" alt="">
+        <br><br>
+        This might look like a silly operation, but it actually <a href="https://www.youtube.com/watch?v=g4ecBFmvAYU">has more uses than it might look...</a>
+        <br><br>
+        For this case study we'll be dealing with sqaured matrix for simplicity, but the overall thinking also works for the rectangular case.
+      </p>
+
+      <div class="empty-space"></div>
+
+      <h4 style="margin-bottom: 16px;">CPU case</h4>
+      <p>
+        A naive implementation to solve this problem might be the following :
+        <br><br>
+        <pre id="matrix_transpose_cpu-code">
+          \BEGIN {algorithm}
+          \CAPTION {- Naive matrix transposition}
+
+          \BEGIN {algorithmic}
+          \STATE \TEXTBF{Input:} X
+          \STATE \TEXTBF{parameters:} matrix-size
+          \STATE ---
+            \FOR {i = 0 to matrix-size}
+              \FOR {j = i+1 to matrix-size}
+              \STATE swap X(i,j) with X(j,i)
+              \ENDFOR
+            \ENDFOR
+            \STATE return X
+          \END {algorithmic}
+          \END {algorithm}
+        </pre>
+        <br><br>
+        \(X\) being squared implies \(t(X)\) is equivalent to computing the symmetry along the main diagonal, for this reason elements on the main diagonal don't need to be moved. The provided solution has time complexity of \(O(n^2 - n)\).
+        <br><br>
+        Anyway, there's room of improvement if the <b>cache behaviour</b> is taken into account :
+        <br>
+        Taking into account the matrix transposition problem and assuming for simplicity that read and write operations are done on 2 separate matrices \(X\) and \(Y\) what happens is that :
+        <ul>
+          <li>
+            <b>While reading X</b> : reading the first element will result into a miss since the matrix has never been accessed. Next accesses will be faster due to caching until the cache line is exhausted.
+          </li>
+          <li>
+            <b>While writing \(Y\)</b> : the entire first column will consist of cache misses since elements are stored in row-major order and not column-major. When parsing the second column elements might still be available in cache, but that's less likely to happen because in the mean time the entire first column has been parsed.
+          </li>
+        </ul>
+        <br><br>
+        <img class="image-general" src="images/GPUcomputing/the-cache-perspective.png" alt="">
+        <div class="empty-space"></div>
+        It's possible to better exploit <b>spatial and temporal locality principles</b> in order to have a more efficient cache usage in such a way : 
+        \(X\) is divided into <b>blocks</b> of defined size and operations (swaps in our case) are performed more locally within elements belonging to symmetrical blocks (with respect to the main diagonal).
+        This allows a more localized job into the space and time domains.
+        <br><br>
+        <img class="image-general" src="images/GPUcomputing/swaps-displace.png" style="width: 40%; margin-left: 30%;" alt="">        
+        <br>
+        Blocks belonging to the main diagonal are evaluated first respect to the others because they represent a sub-case, in which swaps are
+        performed inside a single block (and not a pair of blocks). Blocks are still accessed in row-column order after the diagonal is parsed.
+      </p>
+      <br><br> 
+      
+      <h4 style="margin-bottom: 16px;"> GPU case</h4>
+      <p>
+        <img class="image-general" src="images/GPUcomputing/transpose_blocks_gpu-schema.png" alt="schema_gpu_mat_trans">
+        <br><br>
+        This is more or less a 1 to 1 translation of the in-place CPU block-based matrix transposition described above, but implemented with <b>CUDA</b>.
+        The most important aspect of this solution is the usage of <b>shared memory</b> which is \(\times100\) faster than the global memory (on no-cached accesses) and enables
+        <a href="https://giahuy04.medium.com/global-memory-coalescing-37a6f9d7e314#:~:text=Coalescing%3A%20This%20is%20the%20process,known%20what%20to%20give%20out%2C"><b>coalesced writes</b></a>.
+        Each thread block is in charge of copying 2 symmetrical blocks from \(X\) (one per side w.r.t the main diagonal) inside the shared memory, referred as \(A\) (superior block) and \(B\) (inferior block).
+        Once the copy is completed for both blocks each thread block proceeds copying \(A\) and \(B\) inside \(X\) following column major ordering on
+        reads and row major on writes. Notice also that write addresses on \(X\) of \(A\) and \(B\)  are swapped.
+        
+        <br><br>
+        For more info about our results an code, chechout the project's <b><a href="resources/report_cudaMatrixTranspose.pdf">Report</a></b> and <b><a href="https://github.com/LuCazzola/cudaMatrixTranspose">GitHub page</a></b>.
+        <br><br>
+        <a href="https://github.com/LuCazzola/cudaMatrixTranspose" class="a-light"><img class="image-general" src="images/icons/github.svg" width="64" height="64" alt=""></a>
+      </p>
+
+      <div class="empty-space-big"></div>
+
+      <h4 style="margin-bottom: 16px;">The (second) problem : Convolution on images</h4>
+      <p>
+        When applying a filter to an \(n\)-dimensional signal (\(n\in \mathbb{N}^+\)) one of the most common and effective operation is the convolution. In a 2-dimensional scenario, which is the
+        case for <b>images</b>, operations such as like blurring, sharpening and edge extraction can be performed using convolutions. Some deep learning architectures also massively take
+        advantage of convolution to automatically extract significant features from images. The wide-ranging applications of image convolution underscore the need
+        for an efficient implementation of the convolution operation. For a filter \(w\) of size \(n \times m\) and an image \(f\) the convolution operation is defined as :
+        
+        \[
+            w(x,y) * f(x,y) = \sum_{s = 0}^{m-1} \sum_{t = 0}^{n-1} w(s,t) \cdot f(x-s,y-t) 
+        \]
+      </p>
+
+      <h4 style="margin-bottom: 16px;">Implementations</h4>
+      <p>
+        Our design process went through several incremental optimization of the convolution operation based on a <a href="https://en.wikipedia.org/wiki/Divide-and-conquer_algorithm">Divide-and-conquer</a> type of paradigm
+        <ol>
+          <li><b>CPU naive</b> : Most direct and intuitive implementation. It is a straight-forward implementation of the mathematical convolution def-inition. The filter \(K\) is applied sequentially to every pixel in the image of \(I\)</li>
+          <li><b>GPU naive</b> : The idea behind the algorithm is the same as in (Algo. 1). But instead of processing each pixel sequentially, all pixels are computed in parallel. Each thread applies the kernel to all image channels</li>
+          <li><b>GPU Shared Memory</b> : Computation re-quires many repeated accesses to the kernel and the image patch. Faster memory access time for the kernel and the image patch should benefit the performances.</li>
+          <li><b>GPU Shared Memory using Constant Memory</b> : Since the kernel values do not change during the computation and the kernel size is relatively small, the kernel can be placed in the GPU's constant memory. Constant memory is a special part of the GPU's global memory, that is cached for efficient accesses</li> 
+          <li><b>Cached GPU Shared Memory using Constant Memory</b> : When computing the convolution, image pixels which are inside the image patch processed by the thread block are loaded from shared memory. The other pixels are loaded from global memory. One can observe that in (4.) the padding of an image patch overlaps with the inner patch of
+            its neighboring patches. Therefore, there is a significant probability, that the padding of an image patch is already in L2 cache. Hence, the padding can be efficiently accessed, without extra coping the padding into shared memory for every image patch.
+          </li>
+        </ol>
+        <br><br>
+        For more info about our results an code, chechout the project's <b><a href="resources/report_cuda2dConvolution.pdf">Report</a></b> and <b><a href="https://github.com/LuCazzola/cuda2dConvolution">GitHub page</a></b>.
+        <br><br>
+        <a href="https://github.com/LuCazzola/cuda2dConvolution" class="a-light"><img class="image-general" src="images/icons/github.svg" width="64" height="64" alt=""></a>
+      </p>
+
+    </div>
+  </div>
+  
+  <div class="empty-space-big"></div> 
+
+  <!-- MY ROLE -->
+
+  <div class="section-03">
+    <div class="card-orizontal-profile">
+      <div style="flex-basis: 65%;" class="item">
+        <div>
+          <h3 class="titolo-didascalia">My contribution to the project</h3>
+          <p class="didascalia">
+            The first part on matrix transposition has been done entirely by myself. The image convolution part was done in collaboration with a colleague of mine : I've focussed mostly on
+            the benchmarking and code base mantenance, but also helped in finding solutions to our problem.
+          </p>
+          <div class="empty-space"></div>
+          <div>
+            <a href="projects.html" class="a-light"><button class="button-01"
+                style="display: inline-block; margin-bottom: 8px;"> See other projects
+              </button> </a>
+          </div>
+        </div>
+      </div>
+
+      <div style="flex-basis: 5%;"></div>
+
+      <div style="flex-basis: 30%; " class="item">
+        <img class="image-general" src="images/me/avatar-thinking.png" alt="">
+      </div>   
+    </div>
+  </div>
+  <div class="empty-space-big"></div>
+  
+
+  <div class="footer">
+    <h2 class="white-text"> Contact me!</h2>
+    <h4 class="white-text-secondary">University mail</h4>
+    <p class="didascalia, white-text">luca.cazzola-1@studenti.unitn.it</p>
+    <h4 class="white-text-secondary">Personal mail</h4>
+    <p class="didascalia, white-text">luca.cazzola.2001@gmail.com</p>
+    <h4 class="white-text-secondary">Mobile</h4>
+    <p class="didascalia, white-text">+39 350 032 3641</p>
+    <h4 class="white-text-secondary">Linkedin</h4>
+    <p class="didascalia, white-text">luca-cazzola-5699a92a9</p>
+  </div>
+
+  <script>
+    pseudocode.renderElement(document.getElementById("matrix_transpose_cpu-code"));
+  </script>
+</body>
+
+</html>

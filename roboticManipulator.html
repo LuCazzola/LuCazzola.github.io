@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Patua+One&display=swap" rel="stylesheet">
+
+  <title>Robotic manipulator</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="images/favicons/favicon-32x32.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <!-- NAVBAR DESKTOP -->
+
+  <div class="navbar-desktop">
+    <a class="a-light" style="margin-right: 5%;" href="index.html">HOME</a>
+
+    <a class="a-light" style="margin-right: 5%;" href="projects.html">PROJECTS</a>
+
+    <a class="a-light" style="margin-right: 5%;" href="bio.html">ABOUT ME</a>
+
+    <a class="a-light" style="margin-right: 5%;" href="contacts.html">CONTACT</a>
+
+  </div>
+
+  <!-- NAVBAR MOBILE -->
+
+  <div class="navbar-mobile">
+    <a class="a-light" style="margin-bottom: 8px;" href="index.html">HOME</a>
+
+    <a class="a-light" style="margin-bottom: 8px;" href="projects.html">PROJECTS</a>
+
+    <a class="a-light" style="margin-bottom: 8px;" href="bio.html">ABOUT ME</a>
+
+    <a class="a-light" style="margin-bottom: 8px;" href="contacts.html">CONTACT</a>
+
+  </div>
+
+
+  <div class="empty-space"></div>
+
+  <div class="section-03">
+    <div style="max-width: 600px;">
+      <h2 style="margin-bottom: 16px;">Robotic manipulator</h2>
+      <h3 style="margin-bottom: 16px;">A pick and place system for an anthropomorphic arm</h3>
+    </div>
+
+    <div class="empty-space"></div>
+
+    <div class="project-overview">
+      <h4>Project overview</h4>
+      <div style="height: 16px; border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+          "> </div>
+      <div style="height:16px;"></div>
+      <div class="project-overview-content">
+        <div class="project-topic">
+          <h3>Problems</h3>
+          <p>
+            Even in a "simple" pick & place application robotic manipulators might need to be responsive to changes in the target object's position.
+          </p>
+          <p>
+            Considered such a scenario how do we achieve so?
+          </p>
+        </div>
+        <div class="project-topic">
+          <h3>Methods</h3>
+          <p>
+            Synthetic dataset generation;<br><br>
+            Object detection and classification;<br><br>
+            Object pose estimation;<br><br>
+            Robotic kinematics;<br><br>
+            ROS architecture designing.<br><br>
+          </p>  
+        </div>
+        <div class="project-topic">
+          <h3>Tools</h3>
+          <p>
+            Python;<br><br>
+            C++;<br><br>
+            ROS;<br><br>
+            Blender;<br><br>
+            YOLO;<br><br>
+            Gazebo.<br><br>
+          </p>
+        </div>
+        <div class="project-topic">
+          <h3>Goals</h3>
+          <p>
+            Make a UR5 robotic arm grasp randomly displaced Mega Blocks (big lego like objects) and place them one by one into a specific
+            location according to their class, making the computation of dynamics and the sensorial components work fluently into a ROS environment.
+          </p>
+        </div>
+      </div>
+      <div style="height: 16px; border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+          "> </div>
+      <div style="height:16px;"></div>
+      <h5> Developed in collaboration with Sergio Brodesco and Dennis Cattoni (2023).</h5>
+    </div>
+    <div class="empty-space-big"></div>
+
+    <div style="max-width: 750px;">
+      <iframe width="100%" height="500px" style="text-align: center" src="https://www.youtube.com/embed/KMwLXcuJvw0" title="YouTube video player"
+          frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen>
+      </iframe>
+      <div class="empty-space"></div>
+
+      <h4 style="margin-bottom: 16px;">Context</h4>
+      <p>
+        This project was part of the "Introduction to robotics" couse at University of Trento a.y. 2022/2023, on my last year of Bachelor's degree in computer science.
+        <br><br>
+        From an accademic perspective the objective was about putting into practice the knowledge acquired during the course into a complex and variegate context which demanded coding,
+        communication and engenieering skills.
+        <br><br>
+        Naturally, the accademic context involves as always some constraints. In our case we couldn't use the kinematic function provided by the manipulator's producer, we had instead to re-implement them from scratch, requiring us to understand the mathematical details behind it.   
+      </p>
+    </div>
+  </div>
+
+  <div class="empty-space-big"></div>
+
+  <!-- PROCESS -->
+
+  <div style="background-color: #dbf1ff">
+    <div class="empty-space-big"></div>
+    <div class="section-03">
+      <h3>Design process</h3>
+
+      <div class="empty-space"></div>
+
+      <div class="project-overview-content">
+        <div class="circle">
+          <div class="circle-number"></div>
+          <h3>1</h3>
+          <h4>ROS architecture designing</h4>
+        </div>
+        <div class="circle">
+          <div class="circle-number"></div>
+          <h3>2</h3>
+          <h4>Computer vision</h4>
+        </div>
+        <div class="circle">
+          <div class="circle-number"></div>
+          <h3>3</h3>
+          <h4>Robot kinematics <br>&<br> dynamics</h4>
+        </div>
+        <div class="circle">
+          <div class="circle-number"></div>
+          <h3>4</h3>
+          <h4>Simulated environment testing</h4>
+        </div>
+        <div class="circle">
+          <div class="circle-number"></div>
+          <h3>5</h3>
+          <h4>Testing on real robot</h4>
+        </div>
+      </div>
+    </div>
+
+    <div class="empty-space-big"></div>
+
+  </div>
+
+  <div class="empty-space-big"></div>
+
+  <div class="section-03">
+    <div style="max-width: 750px;">
+
+      <h4 style="margin-bottom: 16px;">The problem</h4>
+      <p>
+        Robotic matipulators working in assembly line scenarios are generally programmed to perform specific and precise pre-defined sequencies of actions in orther to achieve their goal... But that's not always the case! What if the workspace is non-static and the robot needs to first assess the situation and then act as a consequence? That's the type of sceraio we're dealing with in this project. 
+        <br><br>
+        We dispose of
+        <ul>
+          <li>UR5 manipulator</li>
+          <li>ZED2 RGBD camera</li>
+          <li>a bag of Mega Blocks with the corresponding 11 possible 3d model shapes</li>
+        </ul>
+        The robot must pick all the blocks displaced on a table and move them to a specific location according to the object class.
+      </p>
+
+      <div class="empty-space"></div>
+
+      <h4 style="margin-bottom: 16px;"> Addressing the problem</h4>
+      <p>
+        ROS is our backbone frame to develop the blocks which will compose the whole system :
+        <br><br>
+        <img class="image-general" src="images/robotica/ROS-architecture.png" alt="">
+        <br><br>
+        There are basically 3 main nodes handling the majour challenges we need to face :
+        <br><br>
+        <b>Image processor</b> : in charge of classifying the objects and estimate their position & rotation in space
+        <br>
+        <b>Motion processor</b> : in charge of handling the robot's kinematics (trajectory computation, collision detection, ...)
+        <br>
+        <b>Task planner</b> : intermediate node which instructs the robot given the current environment situation 
+      </p>
+      <div class="empty-space"></div>
+
+      <h4 style="margin-bottom: 16px;">Computer vision</h4>
+      <p>
+        Nowadays the image classification task is fairly easy one, with deep models such as <b>YOLO</b> capable of performing accurate detection on real time systems.
+        The first problem we're facing is that those models require good, labelled data to perform well.
+        What we decided to do was making use of the 3d models we had to <b>generate our data syntetically inside Blender</b>, which is perhaps the most famous 3d modelling software on the market.
+        <br><br>
+        For this reasons a replica of the real world setting has been modelled inside of <b>Blender</b> togheter with a script able to automatically render and annotate YOLO friendly images showing random displacements of the 3d models, varrying also other scene's parameters.
+        <br><br>
+        <img class="image-general" src="images/robotica/syn_data_1.png" alt="">
+        <br><br>
+        After <b>training on a fully synthetic dataset</b> the YOLO classifier proved to be generalize well also in the real world
+        <br><br>
+        <img class="image-general" src="images/robotica/detection_all.png" alt="">
+        <br><br>
+        Obtaining the object's position after a good detection step is easy since the ZED2 camera dispose of a depth sensor, which makes the job easier, but we still need to acquire the objects 3d rotation in space.
+        The easier way of achieve so would probably we to use a different deep architecture and feed it with also the rotation information, but we decided to go for another way.
+        <br><br>
+        What we do is basically consider the point cloud captured by the ZED2 inside an object's bounding box, then we sample a good ammount of points from the corresponding class object's 3d model and interpolate these 2 sets pointcloud via extracting the <b>FPFH features</b>, running <b>RANSAC</b> and refining it's computation with <b>ICP</b>.
+        <br><br>
+        As long as the 3d models are accurate enough and the ZED2 captures a decent amount of points relative to the object we're able to extract the rotation matrix generated by the pointcloud interpolation and use it as the object's rotation.
+        <br><br>
+        <img class="image-general" src="images/robotica/rots.png" alt="">
+      </p>
+
+      <div class="empty-space"></div>
+      
+      <h4 style="margin-bottom: 16px;">Motion processors</h4>
+      <p>
+        Follows the dynamics schema we opted for :
+        <br><br>
+        <img class="image-general" src="images/robotica/differential_kinematic_control_scheme.svg" alt="">
+      </p>
+      
+      <div class="empty-space-big"></div>
+
+      <h3 style="text-align: center">Further informations & source code available on GitHub !</h3>
+      <div class="empty-space"></div>
+      <a href="https://github.com/SergioBrodesco/FdR-groupW/tree/master" class="a-light"><img class="image-general" src="images/icons/github.svg" width="64" height="64" alt=""></a>
+      <div class="empty-space-big"></div>
+      
+    </div>
+  </div>
+  
+
+  <!-- MY ROLE -->
+
+  <div class="section-03">
+    <div class="card-orizontal-profile">
+      <div style="flex-basis: 65%;" class="item">
+        <div>
+          <h3 class="titolo-didascalia">My contribution to the project</h3>
+          <p class="didascalia">
+            I was mainly responsible of the entire <b>computer vision</b> part, but i also joined my colleagues in developing all the other components
+          </p>
+          <div class="empty-space"></div>
+          <div>
+            <a href="projects.html" class="a-light"><button class="button-01"
+                style="display: inline-block; margin-bottom: 8px;"> See other projects
+              </button> </a>
+          </div>
+        </div>
+      </div>
+
+      <div style="flex-basis: 5%;"></div>
+
+      <div style="flex-basis: 30%; " class="item">
+        <img class="image-general" src="images/me/avatar-thinking.png" alt="">
+      </div>   
+    </div>
+  </div>
+
+  <div class="empty-space-big"></div>
+
+  
+
+  <div class="footer">
+    <h2 class="white-text"> Contact me!</h2>
+    <h4 class="white-text-secondary">University mail</h4>
+    <p class="didascalia, white-text">luca.cazzola-1@studenti.unitn.it</p>
+    <h4 class="white-text-secondary">Personal mail</h4>
+    <p class="didascalia, white-text">luca.cazzola.2001@gmail.com</p>
+    <h4 class="white-text-secondary">Mobile</h4>
+    <p class="didascalia, white-text">+39 350 032 3641</p>
+    <h4 class="white-text-secondary">Linkedin</h4>
+    <p class="didascalia, white-text">luca-cazzola-5699a92a9</p>
+  </div>
+</body>
+
+</html>

@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Patua+One&display=swap" rel="stylesheet">
+
+  <title>Motion capture</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="images/favicons/favicon-32x32.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <!-- NAVBAR DESKTOP -->
+
+  <div class="navbar-desktop">
+    <a class="a-light" style="margin-right: 5%;" href="index.html">HOME</a>
+
+    <a class="a-light" style="margin-right: 5%;" href="projects.html">PROJECTS</a>
+
+    <a class="a-light" style="margin-right: 5%;" href="bio.html">ABOUT ME</a>
+
+    <a class="a-light" style="margin-right: 5%;" href="contacts.html">CONTACT</a>
+
+  </div>
+
+  <!-- NAVBAR MOBILE -->
+
+  <div class="navbar-mobile">
+    <a class="a-light" style="margin-bottom: 8px;" href="index.html">HOME</a>
+
+    <a class="a-light" style="margin-bottom: 8px;" href="projects.html">PROJECTS</a>
+
+    <a class="a-light" style="margin-bottom: 8px;" href="bio.html">ABOUT ME</a>
+
+    <a class="a-light" style="margin-bottom: 8px;" href="contacts.html">CONTACT</a>
+
+  </div>
+
+
+  <div class="empty-space"></div>
+
+  <div class="section-03">
+    <div style="max-width: 600px;">
+      <h2 style="margin-bottom: 16px;">Motion Capturing</h2>
+      <h3 style="margin-bottom: 16px;">Handling and adapt mocap data of an optical system</h3>
+    </div>
+
+    <div class="empty-space"></div>
+
+    <div class="project-overview">
+      <h4>Project overview</h4>
+      <div style="height: 16px; border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+          "> </div>
+      <div style="height:16px;"></div>
+      <div class="project-overview-content">
+        <div class="project-topic">
+          <h3>Problems</h3>
+          <p>
+            Smoothly animating virtual characters is a pretty challenging task, that's why there exist <b>motion capturing systems</b>, which basically translates real world
+            movement into virtual environments.
+            <br><br>
+            One among many possible tracking systems which is suitable for the job is an <b>optical</b> one, which uses a set of trackers displaced on the body, tracked by several cameras.
+          </p>
+        </div>
+        <div class="project-topic">
+          <h3>Methods</h3>
+          <p>
+            OptiTrack<br><br>
+            Tracking<br><br>
+            Predicting<br><br>
+          </p>  
+        </div>
+        <div class="project-topic">
+          <h3>Tools</h3>
+          <p>
+            Python;<br><br>
+            OpenCV;<br><br>
+            Unreal Engine 5;<br><br>
+          </p>
+        </div>
+        <div class="project-topic">
+          <h3>Goals</h3>
+          <p>
+            Learn to work with optical tracking data.
+            <br><br>
+            Find also way to make them more robust to information loss: a sensor's data is lost if not enough camera can capture its position.
+            <br><br>
+            Move to virtual environment such as Unreal Engine 5, understanding the tool and modelling a scene with an animated virtual character.
+            <br><br>
+            Extract spatial informations from it and achieve 3D to 2D projection of skeleton joints on the camera image plane.
+          </p>
+        </div>
+      </div>
+      <div style="height: 16px; border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+          "> </div>
+      <div style="height:16px;"></div>
+      <h5> Developed in collaboration with Alessandro Lorenzi (2024).</h5>
+    </div>
+
+    <div class="empty-space"></div>
+
+    <div style="max-width: 750px;">
+      <div class="empty-space"></div>
+      <h4 style="margin-bottom: 16px;">Context</h4>
+      <p>
+        This project was part of the <b>Computer Vision course</b> at University of Trento a.y. 2023/2024, on my first year of Master's degree in AI systems.
+        <br><br>
+        I've always found virtual environments' possibilities really interesting and limitless. I was quite happy to work in such contexts inside a university project.
+      </p>
+    </div>
+  </div>
+
+  <div class="empty-space-big"></div>
+
+  <!-- PROCESS -->
+
+  <div style="background-color: #dbf1ff">
+    <div class="empty-space-big"></div>
+    <div class="section-03">
+      <h3>Design process</h3>
+
+      <div class="empty-space"></div>
+
+      <div class="project-overview-content">
+        <div class="circle">
+          <div class="circle-number"></div>
+          <h3>1</h3>
+          <h4>Understanding the data</h4>
+        </div>
+        <div class="circle">
+          <div class="circle-number"></div>
+          <h3>2</h3>
+          <h4>Address the data loss problem</h4>
+        </div>
+        <div class="circle">
+          <div class="circle-number"></div>
+          <h3>3</h3>
+          <h4>Unreal Engine simulation</h4>
+        </div>
+        <div class="circle">
+          <div class="circle-number"></div>
+          <h3>4</h3>
+          <h4>3D to 2D projection</h4>
+        </div>
+      </div>
+    </div>
+
+    <div class="empty-space-big"></div>
+
+  </div>
+
+  <div class="empty-space-big"></div>
+
+  <div class="section-03">
+    <div style="max-width: 800px;">
+      
+      <!--  The problem  -->
+      <h4 style="margin-bottom: 16px;"> The problem</h4>
+      <p>
+        Optical tracking systems are able to gather information about trackers at an impressive speed (those we have in the labs go up to 360 fps).
+        <br>
+        The informations provided by those sensors we mostly care about are : 
+        <ul>
+          <li>Marker positions</li>
+          <li>Marker rotations</li>
+          <li>Joint lengths</li>
+        </ul>
+        We can utilize those data to build a simple demo even inside Python's <b>Matplotlib</b>, which is not really designed to such tasks... but it's easy and does the job :
+        <div class="empty-space"></div>
+        <img class="image-general" src="images/Optitrack/skeleton-cropped.gif" style="width: 50%; margin-left: 25%;" alt="">
+        <div class="empty-space"></div>
+        This animation was a pretty smooth one, without any big defects, let's see a harder case :
+        <div class="empty-space"></div>
+        <img class="image-general" src="images/Optitrack/ragnetto-basic-cropped.gif" style="width: 50%; margin-left: 25%;" alt="">
+        <div class="empty-space"></div>
+        Notice the flickering! This occurs when less than 3 cameras can see the markers, causing a complete loss of information... this is what we want to fix.
+      </p>
+
+      <div class="empty-space"></div>
+
+      <!--  Addressing the problem  -->
+      <h4 style="margin-bottom: 16px;"> Addressing the problem</h4>
+      <p>
+        A possible solution to the problem is to apply some sort of external tracking, so that when the sensors' information is loss we can try to predict it.
+        A simple way to achieve so is the application of naive filters! We propose 2: a <b>Kallman filter</b> (the most popular and obvious) & a <b>particle filter</b>.
+        <br>
+        Starting with the Kallman filter : 
+        <div class="empty-space"></div>
+        <img class="image-general" src="images/Optitrack/ragnetto-KF.gif" style="width: 50%; margin-left: 25%;" alt="">
+        <div class="empty-space"></div>
+        It's noticeable some shaking, but considering the motion's impredectability and the fact there's not anymore processing other than the filter application that's quite nice.
+        <br>
+        Switching to the particle filter version :
+        <div class="empty-space"></div>
+        <img class="image-general" src="images/Optitrack/ragnetto-PF.gif" style="width: 50%; margin-left: 25%;" alt="">
+        <div class="empty-space"></div>
+        The particle filter's nature makes its stochastic behaviour not really suited for tracking rigid bodies, especially since we can't really retain any body structure's information, as there's no correlation between particles tracking one marker & another.
+        <br>
+        Other more complex objective functions which regulate the particles behaviour might be more suited for the job of course.
+      </p>
+    
+      <div class="empty-space"></div>
+
+      <!--  Unreal Engine simulation  -->
+      <h4 style="margin-bottom: 16px;"> Unreal Engine simulation</h4>
+      <p>
+        By simulating a virtual environment inside <b>Unreal Engine 5.4 (UE)</b> the goal is to extract pose informations necessary
+        to achieve 3D to 2D projection onto the camera image plane of all the joints togheter with the skeletal structure.
+        <br><br>
+        That was our first time playing around with UE, but after a while we got the hang of it : UE makes it possible to interact with level (scene) components either
+        via C++ code, or blueprints (BP) (visual representation of code functions via node graphs). As it was our first time with the Engine we went for the BP approach.
+        <br><br>
+        As first we properly modelled the scene inserting 2 core blueprints, one containing our main actor and the other containing the camera.
+        Using the animation retargeting feature provided by UE5 we were also easily able to map the provided animation onto another free skeleton from
+        <a href="https://www.mixamo.com/#/" class="a-light">Adobe Mixamo</a> characters
+
+        <div class="empty-space"></div>
+        <img class="image-general" src="images/Optitrack/scene.png" style="width: 100%;" alt="">
+        <div class="empty-space"></div>
+
+        properly positioning actors in the scene a LevelSequencer component allows to capture a video using
+        the virtual camera. Using the blueprint engine together with <a href="https://www.unrealdirective.com/tips/json-blueprint-utilities-plugin" class="a-light">Json blueprint utility plugin</a>
+        we implemented a script to extract the following data in Json format.
+        <ul>
+          <li>
+            <b>bones</b> (∀.frames, ∀.bones ∈ skeleton) : {X, Y, Z} position, {X, Y, Z, W } rotation (quaternion), bone name.
+          </li>
+          <li>
+            <b>skeleton base frame</b> (∀.frames) : {X, Y, Z} position, {X, Y, Z, W } rotation (quaternion).
+          </li>
+          <li>
+            <b>camera</b> (once, camera is fixed) : {X, Y, Z} position, {X, Y, Z, W } rotation (quaternion), FOV, aspect ratio.    
+          </li>
+        </ul>
+        
+        <div class="empty-space"></div>
+        You can either play around with this blueprint visualization tool (enter in full screen for better visualization)
+        <br><br>
+        <iframe src="https://blueprintue.com/render/_qn_vgvc/" style="width: 100%; height: 450px;" scrolling="no" allowfullscreen ></iframe>
+        <br><br>
+        Visualization also available <a href="https://blueprintue.com/blueprint/_qn_vgvc/" class="a-light"><b>HERE</b></a>
+        <div class="empty-space"></div>
+      </p>
+
+      <div class="empty-space"></div>
+
+      <!-- 3D to 2D projection  -->
+      <h4 style="margin-bottom: 16px;"> 3D to 2D projection</h4>
+      <p>
+        We decided to go for <b>openCV</b> as image processing framework as it provides all we need to perform a 3D to 2D projection of a set of points into the camera image plane.
+        We had some stuff to deal with first :
+        <br><br>
+        UE5 and openCV use 2 <b>different coordinate systems</b> as :
+        <ul>
+          <li>
+            UE5 is <b>left handed</b> : with {+X = forward, +Y = right, +Z = up}
+          </li>
+          <li>
+            openCV is <b>right handed</b> : with {+X = right, +Y = down, +Z = forward (depth)}
+          </li>
+        </ul>
+        That means all the position and rotation data we gatehred need to be converted performing a change of basis.
+        Such a task can be easily be handled with <b>using homogenous transformation matrices</b> as well explained
+        <a href="https://www.dariomazzanti.com/uncategorized/change-of-basis/" class="a-light"><b>here</b></a>.
+        <br><br>
+        Knowing the world coordinate references to both the camera and joints we just need to
+        extract the <b>camera intrinsics</b> and compute the projection. Camera intrinsics are generally extracted
+        via camera calibration, but as this is a controlled environment with no distortion we can directly compute them with some algebra.
+        computing the transformation for each point with the  <a href="https://docs.opencv.org/3.4/d9/d0c/group__calib3d.html#ga1019495a2c8d1743ed5cc23fa0daff8c" class="a-light"><b>cv.projectPoints()</b></a>
+        we're able correctly displace the skeleton on the image plane.
+        <div class="empty-space"></div>
+        <iframe width="100%" height="500px" src="https://www.youtube.com/embed/o15dF4TyqWo?si=ldDSyZTc8kJHTUQ2" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+        <div class="empty-space"></div>
+      </p>
+
+      <div class="empty-space"></div>
+
+      <!-- Bonus  -->
+      <h4 style="margin-bottom: 16px;"> Bonus</h4>
+      <p>
+        Instead of evaluating results on Matplotlib it would be much better to forward data to a
+        more suitable environment such as <b>Blender</b>. To achieve so we used as basis the
+        <a href="https://github.com/DeepMotionEditing/deep-motion-editing" class="a-light"><b>deep-motion-editing</b></a>
+        repository which provides a framework to build skeleton aware neural networks by interacting with Blender python APIs.
+        <div class="empty-space"></div>
+        <iframe width="100%" height="500px" src="https://www.youtube.com/embed/D_EZb1E4K_M?si=-nyn3g5gieaiwIM5" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+        <div class="empty-space"></div>
+      </p>
+
+      <div class="empty-space-big"></div>
+      
+      <!-- GitHub  -->
+      <h3 style="text-align: center">Further informations & source code available on GitHub !</h3>
+      <div class="empty-space"></div>
+      <a href="https://github.com/lorenzialessandro/CV-project" class="a-light"><img class="image-general" src="images/icons/github.svg" width="64" height="64" alt=""></a>
+      
+      <div class="empty-space-big"></div>
+    </div>
+  </div>
+
+  <!-- MY ROLE -->
+
+  <div class="section-03">
+    <div class="card-orizontal-profile">
+      <div style="flex-basis: 65%;" class="item">
+        <div>
+          <h3 class="titolo-didascalia">My contribution to the project</h3>
+          <p class="didascalia">
+            The team worked as a compact unit through almost all the phases of the project.
+          </p>
+          <div class="empty-space"></div>
+          <div>
+            <a href="projects.html" class="a-light"><button class="button-01"
+                style="display: inline-block; margin-bottom: 8px;"> See other projects
+              </button> </a>
+          </div>
+        </div>
+      </div>
+
+      <div style="flex-basis: 5%;"></div>
+
+      <div style="flex-basis: 30%; " class="item">
+        <img class="image-general" src="images/me/avatar-thinking.png" alt="">
+      </div>   
+    </div>
+  </div>
+
+  <div class="empty-space-big"></div>
+
+  
+
+  <div class="footer">
+    <h2 class="white-text"> Contact me!</h2>
+    <h4 class="white-text-secondary">University mail</h4>
+    <p class="didascalia, white-text">luca.cazzola-1@studenti.unitn.it</p>
+    <h4 class="white-text-secondary">Personal mail</h4>
+    <p class="didascalia, white-text">luca.cazzola.2001@gmail.com</p>
+    <h4 class="white-text-secondary">Mobile</h4>
+    <p class="didascalia, white-text">+39 350 032 3641</p>
+    <h4 class="white-text-secondary">Linkedin</h4>
+    <p class="didascalia, white-text">luca-cazzola-5699a92a9</p>
+  </div>
+</body>
+
+</html>
