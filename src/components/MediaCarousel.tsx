@@ -1,13 +1,43 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
 
 type MediaItem =
-  | { type: "image"; src: string; caption?: string }
-  | { type: "video"; src: string; poster?: string; caption?: string }
-  | { type: "embed"; src: string; caption?: string };
+  | { type: "image"; src: string; caption?: string; title?: string }
+  | { type: "video"; src: string; poster?: string; caption?: string; title?: string }
+  | { type: "embed"; src: string; caption?: string; title?: string };
 
 interface MediaCarouselProps {
   items: MediaItem[];
 }
+
+const mimeFor = (src?: string) => {
+  if (!src) return undefined;
+  const ext = String(src).split('?')[0].split('.').pop()?.toLowerCase();
+  switch (ext) {
+    case 'mp4': return 'video/mp4';
+    case 'webm': return 'video/webm';
+    case 'ogv': case 'ogg': return 'video/ogg';
+    case 'mkv': return 'video/x-matroska';
+    default: return undefined;
+  }
+};
+
+const buildVideoSources = (s?: string) => {
+  if (!s) return [] as string[];
+  const url = String(s);
+  const [path, query] = url.split('?');
+  const ext = path.split('.').pop()?.toLowerCase() ?? '';
+  const base = path.replace(/\.[^.]+$/, '');
+  const candidates: string[] = [url];
+  if (ext === 'mp4') {
+    candidates.push(`${base}.webm${query ? `?${query}` : ''}`);
+  } else if (ext === 'webm') {
+    candidates.push(`${base}.mp4${query ? `?${query}` : ''}`);
+  } else {
+    candidates.push(`${base}.mp4${query ? `?${query}` : ''}`);
+    candidates.push(`${base}.webm${query ? `?${query}` : ''}`);
+  }
+  return Array.from(new Set(candidates));
+};
 
 const MediaCarousel: React.FC<MediaCarouselProps> = ({ items }) => {
   // (removed previous `index` state; we use slideIndex and compute currentIndex)
@@ -100,11 +130,38 @@ const MediaCarousel: React.FC<MediaCarouselProps> = ({ items }) => {
     return () => el.removeEventListener("transitionend", onEnd);
   }, [slideIndex, slides.length, items.length]);
 
+  // Ensure only the currently visible slide's video plays. Pause and reset others.
+  useEffect(() => {
+    slideRefs.current.forEach((slideEl, idx) => {
+      if (!slideEl) return;
+      const video = slideEl.querySelector('video') as HTMLVideoElement | null;
+      if (!video) return;
+      try {
+        if (idx === slideIndex) {
+          // start playback from the beginning for visible video
+          video.currentTime = 0;
+          const p = video.play();
+          if (p && typeof p.then === 'function') p.catch(() => {});
+        } else {
+          video.pause();
+          if (!isNaN(video.duration)) video.currentTime = 0;
+        }
+      } catch (e) {
+        // ignore playback errors
+      }
+    });
+  }, [slideIndex, slides.length, items.length]);
+
   return (
     <div className="w-full">
+      {/* Title for the current slide (rendered separately above the media) */}
+      {current?.title && (
+        <div style={{ textAlign: 'center', fontSize: 16, fontWeight: 600, marginBottom: 8 }}>{current.title}</div>
+      )}
+
       <div
         ref={containerRef}
-        className="relative w-full rounded-md overflow-hidden bg-gray-50"
+        className="relative w-full rounded-md overflow-hidden bg-white"
         style={{ height: maxHeight ? `${maxHeight}px` : `${DEFAULT_HEIGHT}px` }}
       >
         {/* track */}
@@ -125,50 +182,71 @@ const MediaCarousel: React.FC<MediaCarouselProps> = ({ items }) => {
               key={i}
               ref={(el) => (slideRefs.current[i] = el)}
               className="w-full flex-shrink-0"
-              style={{ width: `${100 / Math.max(slides.length, 1)}%`, height: "100%" }}
+              style={{ width: `${100 / Math.max(slides.length, 1)}%`, height: "100%", display: 'flex', flexDirection: 'column', background: 'white' }}
             >
               {it.type === "image" && (
-                <img
-                  src={it.src}
-                  alt={it.caption ?? "media"}
-                  className="w-full h-full object-cover"
-                  onLoad={onMediaLoad}
-                  style={{ display: "block", height: "100%", width: "100%", objectFit: "cover" }}
-                />
+                <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                  {/* title intentionally rendered above the carousel as a separate element */}
+                  <div style={{ marginTop: 'auto', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <img
+                      src={it.src}
+                      alt={it.caption ?? 'media'}
+                      className="w-full h-auto"
+                      onLoad={onMediaLoad}
+                      style={{ display: 'block', maxHeight: '100%', maxWidth: '100%', objectFit: 'contain', position: 'relative', zIndex: 2, pointerEvents: 'auto' }}
+                    />
+                  </div>
+                </div>
               )}
 
               {it.type === "video" && (
-                <video
-                  controls
-                  poster={it.poster}
-                  className="w-full h-full bg-black"
-                  onLoadedMetadata={onMediaLoad}
-                  style={{ height: "100%", width: "100%" }}
-                >
-                  <source src={it.src} />
-                  Your browser does not support the video tag.
-                </video>
+                <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                  {/* title intentionally rendered above the carousel as a separate element */}
+                  <div style={{ marginTop: 'auto', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <video
+                      controls
+                      loop
+                      muted
+                      playsInline
+                      preload="metadata"
+                      poster={it.poster}
+                      className="w-auto h-auto"
+                      onLoadedMetadata={onMediaLoad}
+                      style={{ maxHeight: '100%', maxWidth: '100%', background: 'black', position: 'relative', zIndex: 2, pointerEvents: 'auto', objectFit: 'contain' }}
+                    >
+                      {buildVideoSources(it.src).map((src, idx) => (
+                        <source key={idx} src={src} {...(mimeFor(src) ? { type: mimeFor(src) } : {})} />
+                      ))}
+                      Your browser does not support the video tag.
+                    </video>
+                  </div>
+                </div>
               )}
 
               {it.type === "embed" && (
-                <iframe
-                  src={it.src}
-                  title={it.caption ?? "embed"}
-                  className="w-full h-full"
-                  onLoad={onMediaLoad}
-                  style={{ border: 0, height: "100%", width: "100%" }}
-                  allowFullScreen
-                />
+                <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                  {/* title intentionally rendered above the carousel as a separate element */}
+                  <div style={{ marginTop: 'auto', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <iframe
+                      src={it.src}
+                      title={it.caption ?? 'embed'}
+                      className="w-full h-auto"
+                      onLoad={onMediaLoad}
+                      style={{ border: 0, maxHeight: '100%', maxWidth: '100%', position: 'relative', zIndex: 2, pointerEvents: 'auto' }}
+                      allowFullScreen
+                    />
+                  </div>
+                </div>
               )}
             </div>
           ))}
         </div>
         {items.length > 1 && (
           <>
-            <button onClick={prev} aria-label="Previous" className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 rounded-full p-2">
+            <button onClick={prev} aria-label="Previous" className="absolute left-2 top-1/2 -translate-y-1/2 bg-gray-300/80 rounded-full p-2" style={{ zIndex: 5 }}>
               ‹
             </button>
-            <button onClick={next} aria-label="Next" className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 rounded-full p-2">
+            <button onClick={next} aria-label="Next" className="absolute right-2 top-1/2 -translate-y-1/2 bg-gray-300/80 rounded-full p-2" style={{ zIndex: 5 }}>
               ›
             </button>
           </>

@@ -53,7 +53,7 @@ const Publications = () => {
                           )}
                         </span>
                       </p>
-                      {p.summary && <p className="mt-2 text-sm text-muted-foreground">{p.summary}</p>}
+                      {p.abstract && <p className="mt-2 text-sm text-muted-foreground">{p.abstract}</p>}
                     <div className="mt-3 flex flex-wrap gap-2">
                       {(p.tags || []).map((t) => (
                         <Badge key={t} variant="secondary" className="text-xs">{t}</Badge>

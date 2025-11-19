@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FileText, Archive, Code } from "lucide-react";
 import { useParams, Navigate, Link, useNavigate } from "react-router-dom";
 import { getPublicationById } from "@/data/publications";
 import RenderAsMarkdown from "@/lib/RenderAsMarkdown";
 import MediaCarousel from "@/components/MediaCarousel";
+import ThreeBallSeparator from "@/components/ThreeBallSeparator";
 
 const PublicationDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -11,14 +12,28 @@ const PublicationDetail = () => {
   const [mediaIndex, setMediaIndex] = useState(0);
   const navigate = useNavigate();
 
+  // Ensure the publication detail always opens scrolled to top
+  useEffect(() => {
+    try {
+      // standard
+      window.scrollTo({ top: 0, left: 0 });
+      // fallback for some browsers
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    } catch (e) {
+      // ignore in non-browser env
+    }
+  }, []);
+
   if (!pub) return <Navigate to="/publications" replace />;
 
   // widen the main container so the content area can be much larger and more readable
   const containerStyle: React.CSSProperties = { maxWidth: 1200, margin: "0 auto", padding: "28px" };
-  const titleStyle: React.CSSProperties = { fontSize: 48, lineHeight: 1.05, margin: 0 };
+  // Responsive title size: scales between 28px and 48px based on viewport width
+  const titleStyle: React.CSSProperties = { fontSize: 'clamp(28px, 5vw, 48px)', lineHeight: 1.05, margin: 0 };
   // make author names more prominent
   const authorsStyle: React.CSSProperties = { marginTop: 12, color: "#333", fontSize: 18, fontWeight: 700 };
-  // section box used for summary and content blocks
+  // section box used for abstract and content blocks
   const sectionBox: React.CSSProperties = { background: "#f7f7f7", padding: 20, borderRadius: 8, marginTop: 20 };
 
   const hasMedia = Array.isArray(pub.media) && pub.media.length > 0;
@@ -58,6 +73,42 @@ const PublicationDetail = () => {
     );
   };
   const media = hasMedia ? (pub.media as any) : [];
+
+  // Build an ordered list of candidate video sources for broad compatibility.
+  // If the provided URL has an extension like .mp4 or .webm, include the alternate
+  // container with the same basename so the browser can pick a playable one.
+  const buildVideoSources = (s?: string) => {
+    if (!s) return [] as string[];
+    const url = String(s);
+    // strip query to detect extension, but preserve it for alternatives
+    const [path, query] = url.split("?");
+    const ext = path.split('.').pop()?.toLowerCase() ?? '';
+    const base = path.replace(/\.[^.]+$/, '');
+    const candidates: string[] = [url];
+    if (ext === 'mp4') {
+      candidates.push(`${base}.webm${query ? `?${query}` : ''}`);
+    } else if (ext === 'webm') {
+      candidates.push(`${base}.mp4${query ? `?${query}` : ''}`);
+    } else {
+      // unknown extension -> also try common alternatives
+      candidates.push(`${base}.mp4${query ? `?${query}` : ''}`);
+      candidates.push(`${base}.webm${query ? `?${query}` : ''}`);
+    }
+    // dedupe keeping order
+    return Array.from(new Set(candidates));
+  };
+
+  const mimeFor = (src?: string) => {
+    if (!src) return undefined;
+    const ext = String(src).split('?')[0].split('.').pop()?.toLowerCase();
+    switch (ext) {
+      case 'mp4': return 'video/mp4';
+      case 'webm': return 'video/webm';
+      case 'ogv': case 'ogg': return 'video/ogg';
+      case 'mkv': return 'video/x-matroska';
+      default: return undefined;
+    }
+  };
 
   // Use unified RenderAsMarkdown helper (handles [MEDIA:...] and spacing tokens)
 
@@ -186,33 +237,66 @@ const PublicationDetail = () => {
           </header>
 
           {/* Main media below the buttons */}
-          {hasMedia && (
-            <div style={{ marginTop: 28 }}>
-                {media.length === 1 ? (
+          {(pub.image || hasMedia) && (
+            <div style={{ marginTop: 56 }}>
+              {pub.image ? (
+                // Prefer the dedicated `image` field as the main media
+                (() => {
+                  const match = media.find((m: any) => m.type === "image" && m.src === pub.image);
+                  return (
+                    <div>
+                      {match?.title && <div style={{ textAlign: 'center', fontSize: 18, fontWeight: 600, marginBottom: 8 }}>{match.title}</div>}
+                      <img src={pub.image} alt={pub.title} style={{ width: "100%", objectFit: "cover", borderRadius: 8 }} />
+                    </div>
+                  );
+                })()
+              ) : media.length === 1 ? (
                 media[0].type === "image" ? (
-                  <img src={media[0].src} alt={pub.title} style={{ width: "100%", height: 480, objectFit: "cover", borderRadius: 8 }} />
+                  <div>
+                    {media[0].title && <div style={{ textAlign: 'center', fontSize: 18, fontWeight: 600, marginBottom: 8 }}>{media[0].title}</div>}
+                    <img src={media[0].src} alt={pub.title} style={{ width: "100%", objectFit: "cover", borderRadius: 8 }} />
+                  </div>
                 ) : media[0].type === "video" ? (
-                  <video controls style={{ width: "100%", height: 480, background: "#000", borderRadius: 8 }}>
-                    <source src={media[0].src} />
-                  </video>
+                  <div>
+                    {media[0].title && <div style={{ textAlign: 'center', fontSize: 18, fontWeight: 600, marginBottom: 8 }}>{media[0].title}</div>}
+                    <video controls loop autoPlay muted playsInline style={{ width: "100%", background: "transparent", borderRadius: 8 }}>
+                      {buildVideoSources(media[0].src).map((src, idx) => (
+                        <source key={idx} src={src} {...(mimeFor(src) ? { type: mimeFor(src) } : {})} />
+                      ))}
+                    </video>
+                  </div>
                 ) : (
-                  <div style={{ width: "100%", height: 480 }}>
-                    <iframe src={media[0].src} title={pub.title} style={{ width: "100%", height: "100%", border: 0 }} allowFullScreen />
+                  <div>
+                    {media[0].title && <div style={{ textAlign: 'center', fontSize: 18, fontWeight: 600, marginBottom: 8 }}>{media[0].title}</div>}
+                    <div style={{ width: "100%"}}>
+                      <iframe src={media[0].src} title={pub.title} style={{ width: "100%", height: "100%", border: 0 }} allowFullScreen />
+                    </div>
                   </div>
                 )
               ) : (
                 <div>
-                  <div style={{ width: "100%", height: 480, borderRadius: 8, overflow: "hidden" }}>
+                  <div style={{ width: "100%", borderRadius: 8, overflow: "hidden" }}>
                     {media[mediaIndex].type === "image" && (
-                      <img src={media[mediaIndex].src} alt={pub.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                      <div style={{ height: '100%' }}>
+                        {media[mediaIndex].title && <div style={{ textAlign: 'center', fontSize: 18, fontWeight: 600, marginBottom: 8 }}>{media[mediaIndex].title}</div>}
+                        <img src={media[mediaIndex].src} alt={pub.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                      </div>
                     )}
                     {media[mediaIndex].type === "video" && (
-                      <video controls style={{ width: "100%", height: "100%", background: "#000" }}>
-                        <source src={media[mediaIndex].src} />
-                      </video>
+                      <div style={{ height: '100%' }}>
+                        {media[mediaIndex].title && <div style={{ textAlign: 'center', fontSize: 18, fontWeight: 600, marginBottom: 8 }}>{media[mediaIndex].title}</div>}
+                        <video controls loop autoPlay muted playsInline style={{ width: "100%", height: "100%", background: "transparent" }}>
+                          {buildVideoSources(media[mediaIndex].src).map((src, idx) => (
+                            <source key={idx} src={src} {...(mimeFor(src) ? { type: mimeFor(src) } : {})} />
+                          ))}
+                        </video>
+                      </div>
                     )}
                     {media[mediaIndex].type === "embed" && (
-                      <iframe src={media[mediaIndex].src} title={pub.title} style={{ width: "100%", height: "100%", border: 0 }} allowFullScreen />
+                      <div style={{ height: '100%' }}>
+                        {media[mediaIndex].title && <div style={{ textAlign: 'center', fontSize: 18, fontWeight: 600, marginBottom: 8 }}>{media[mediaIndex].title}</div>}
+                        <iframe src={media[mediaIndex].src} title={pub.title} style={{ width: "100%", height: "100%", border: 0 }} allowFullScreen />
+                      </div>
                     )}
                   </div>
 
@@ -226,26 +310,36 @@ const PublicationDetail = () => {
                 </div>
               )}
 
-              {media[mediaIndex] && media[mediaIndex].caption && (
-                <div style={{ marginTop: 8, color: "#555", fontSize: 13 }}>{media[mediaIndex].caption}</div>
+              {/* caption: show caption only when the displayed media has one */}
+              {pub.image ? (
+                // try to find a matching caption in the media array for this image
+                (() => {
+                  const match = media.find((m: any) => m.type === "image" && m.src === pub.image);
+                  return match && match.caption ? <div style={{ marginTop: 8, color: "#555", fontSize: 13 }}>{match.caption}</div> : null;
+                })()
+              ) : (
+                media[mediaIndex] && media[mediaIndex].caption && (
+                  <div style={{ marginTop: 8, color: "#555", fontSize: 13 }}>{media[mediaIndex].caption}</div>
+                )
               )}
             </div>
           )}
 
-          {/* Summary */}
-          {pub.summary && (
+          {/* Abstract */}
+          {pub.abstract && (
             <section style={sectionBox}>
-              <h2 style={{ marginTop: 0 }}>Summary</h2>
-              <p style={{ marginBottom: 0 }}>{pub.summary}</p>
+              <h2 style={{ marginTop: 0 }}>Abstract</h2>
+              <p style={{ marginBottom: 0 }}>{pub.abstract}</p>
             </section>
           )}
 
           {/* Content (markdown) with [CAROUSEL:1-2-3] token support (1-based indices) */}
           {pub.content && (
-            // outer wrapper: keep neutral background here; individual text blocks will use the gray `sectionBox`
-            <section style={{ marginTop: 20 }}>
-              <div style={{ maxWidth: "100%" }}>{RenderAsMarkdown(pub.content, media, { math: true })}</div>
-            </section>
+            <>
+              <ThreeBallSeparator />
+
+              <section style={{ marginBottom: 48 }}>{RenderAsMarkdown(pub.content, media, { math: true })}</section>
+            </>
           )}
         </div>
       </main>

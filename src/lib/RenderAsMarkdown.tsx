@@ -16,10 +16,10 @@ const PSEUDOCODE_CSS = "https://cdn.jsdelivr.net/npm/pseudocode@latest/build/pse
 const PSEUDOCODE_JS = "https://cdn.jsdelivr.net/npm/pseudocode@latest/build/pseudocode.min.js";
 
 type MediaItem =
-  | { type: "image"; src: string; caption?: string; alt?: string; poster?: string }
-  | { type: "gif"; src: string; caption?: string; alt?: string }
-  | { type: "video"; src: string; poster?: string; caption?: string }
-  | { type: "embed"; src: string; caption?: string };
+  | { type: "image"; src: string; caption?: string; alt?: string; poster?: string; title?: string }
+  | { type: "gif"; src: string; caption?: string; alt?: string; title?: string }
+  | { type: "video"; src: string; poster?: string; caption?: string; title?: string }
+  | { type: "embed"; src: string; caption?: string; title?: string };
 
 interface RenderOptions {
   // whether to use math plugins
@@ -74,7 +74,7 @@ export default function RenderAsMarkdown(content: string, media?: MediaItem[], o
 
   const parts: Array<
     | { kind: "text"; text: string }
-    | { kind: "media"; indices: Array<number | "placeholder">; scale?: number }
+    | { kind: "media"; indices: Array<number | "placeholder">; scale?: number; captionBlock?: string }
     | { kind: "placeholder" }
     | { kind: "space"; size: string }
   > = [];
@@ -82,8 +82,10 @@ export default function RenderAsMarkdown(content: string, media?: MediaItem[], o
   // [MEDIA:1-2-3] -> explicit list/ranges
   // [MEDIA:1-2-3:0.8] -> explicit list + scale (0.0-1.0) controlling inner media width
   // [MEDIA...] -> placeholder shorthand (renders the local placeholder)
+  // [MEDIA:1-2]{some text} -> optional `{...}` immediately after token becomes markdown rendered inside the white media card
   // allow '?' inside the MEDIA list to indicate a placeholder slot, e.g. [MEDIA:1-?-3]
-  const tokenRegex = /\[MEDIA:([0-9?\-\s,]+)(?::([0-9.]+))?\]|\[MEDIA\.\.\.\]|\[SPACING:(small|medium|large|xlarge)\]/gi;
+  // capture groups: 1=indices,2=scale,3=braceText for first form,4=braceText for placeholder form,5=spacing
+  const tokenRegex = /\[MEDIA:([0-9?\-\s,]+)(?::([0-9.]+))?\](?:\{([^}]+)\})?|\[MEDIA\.\.\.\](?:\{([^}]+)\})?|\[SPACING:(small|medium|large|xlarge)\]/gi;
   let lastIndex = 0;
   let match: RegExpExecArray | null;
   while ((match = tokenRegex.exec(content)) !== null) {
@@ -91,18 +93,23 @@ export default function RenderAsMarkdown(content: string, media?: MediaItem[], o
       parts.push({ kind: "text", text: content.slice(lastIndex, match.index) });
     }
     // match[0] contains the full matched string. We support three forms:
-    // - [MEDIA:...] where match[1] holds the numeric token list and match[2] optional scale
-    // - [MEDIA...] literal placeholder (no capture groups)
-    // - [SPACING:...] where match[3] holds the size
+    // - [MEDIA:...] where match[1] holds the numeric token list and match[2] optional scale and match[3] optional brace text
+    // - [MEDIA...] literal placeholder where match[4] may hold optional brace text
+    // - [SPACING:...] where match[5] holds the size
+    const braceText = match[3] ?? match[4] ?? undefined;
     if (match[1] !== undefined) {
       const inds = parseIndices(match[1]);
       const scale = match[2] ? parseFloat(match[2]) : undefined;
-      parts.push({ kind: "media", indices: inds, scale });
-    } else if (match[0] === "[MEDIA...]") {
-      // placeholder shorthand -> render a dedicated placeholder element
-      parts.push({ kind: "placeholder" });
-    } else if (match[3]) {
-      parts.push({ kind: "space", size: match[3] });
+      parts.push({ kind: "media", indices: inds, scale, ...(braceText ? { captionBlock: braceText } : {}) } as any);
+    } else if (/^\[MEDIA\.\.\.\]/i.test(match[0])) {
+      // placeholder shorthand -> render a dedicated placeholder element; attach braceText if present
+      if (braceText) {
+        parts.push({ kind: "media", indices: ["placeholder"], ...(braceText ? { captionBlock: braceText } : {}) } as any);
+      } else {
+        parts.push({ kind: "placeholder" });
+      }
+    } else if (match[5]) {
+      parts.push({ kind: "space", size: match[5] });
     }
     lastIndex = tokenRegex.lastIndex;
   }
@@ -116,40 +123,89 @@ export default function RenderAsMarkdown(content: string, media?: MediaItem[], o
       if (s.startsWith("http") || s.startsWith("data:")) return s;
       return s;
     };
+    const mimeFor = (src?: string) => {
+      if (!src) return undefined;
+      const ext = String(src).split('?')[0].split('.').pop()?.toLowerCase();
+      switch (ext) {
+        case 'mp4': return 'video/mp4';
+        case 'webm': return 'video/webm';
+        case 'ogv': case 'ogg': return 'video/ogg';
+        case 'mkv': return 'video/x-matroska';
+        default: return undefined;
+      }
+    };
+    const buildVideoSources = (s?: string) => {
+      if (!s) return [] as string[];
+      const url = String(s);
+      const [path, query] = url.split('?');
+      const ext = path.split('.').pop()?.toLowerCase() ?? '';
+      const base = path.replace(/\.[^.]+$/, '');
+      const candidates: string[] = [url];
+      if (ext === 'mp4') {
+        candidates.push(`${base}.webm${query ? `?${query}` : ''}`);
+      } else if (ext === 'webm') {
+        candidates.push(`${base}.mp4${query ? `?${query}` : ''}`);
+      } else {
+        candidates.push(`${base}.mp4${query ? `?${query}` : ''}`);
+        candidates.push(`${base}.webm${query ? `?${query}` : ''}`);
+      }
+      return Array.from(new Set(candidates));
+    };
       // explicit gif type or image with .gif extension — render as an image so animated GIFs display
+      const Title = ({ children }: { children?: React.ReactNode }) => {
+        if (!children) return null;
+        return (
+          <div style={{ textAlign: 'center', fontSize: 18, fontWeight: 600, marginBottom: 8 }}>{children}</div>
+        );
+      };
+
       if (m.type === "gif" || (m.type === "image" && /\.gif($|\?)/i.test(String(m.src)))) {
         return (
           <figure key={key} className="w-full">
-            <img src={resolve(String(m.src))} alt={(m as any).alt ?? "media"} loading="lazy" className="w-full rounded-lg object-cover" />
+            <Title>{m.title}</Title>
+            <div>
+              <img src={resolve(String(m.src))} alt={(m as any).alt ?? "media"} loading="lazy" className="w-full rounded-lg object-cover" />
+            </div>
             {m.caption && <figcaption className="text-sm text-muted-foreground mt-2">{m.caption}</figcaption>}
           </figure>
         );
       }
       if (m.type === "image") {
+        return (
+          <figure key={key} className="w-full">
+            <Title>{m.title}</Title>
+            <div>
+              <img src={resolve(String(m.src))} alt={m.alt ?? "media"} loading="lazy" className="w-full rounded-lg object-cover" />
+            </div>
+            {m.caption && <figcaption className="text-sm text-muted-foreground mt-2">{m.caption}</figcaption>}
+          </figure>
+        );
+      }
+      if (m.type === "video") {
+        return (
+          <figure key={key} className="w-full">
+            <Title>{m.title}</Title>
+            <div>
+              <video controls loop autoPlay muted playsInline poster={resolve(String(m.poster ?? ""))} className="w-full rounded-lg" style={{ background: "transparent" }}>
+                {buildVideoSources(String(m.src)).map((src, idx) => (
+                  <source key={idx} src={resolve(src)} {...(mimeFor(src) ? { type: mimeFor(src) } : {})} />
+                ))}
+              </video>
+            </div>
+            {m.caption && <figcaption className="text-sm text-muted-foreground mt-2">{m.caption}</figcaption>}
+          </figure>
+        );
+      }
+      // embed
       return (
-        <figure key={key} className="w-full">
-          <img src={resolve(String(m.src))} alt={m.alt ?? "media"} loading="lazy" className="w-full rounded-lg object-cover" />
-          {m.caption && <figcaption className="text-sm text-muted-foreground mt-2">{m.caption}</figcaption>}
-        </figure>
+        <div key={key} className="aspect-video w-full rounded-lg overflow-hidden">
+          <Title>{m.title}</Title>
+          <div style={{ height: '100%' }}>
+            <iframe src={resolve(String(m.src))} title={m.caption ?? 'embed'} allowFullScreen className="w-full h-full" />
+          </div>
+          {m.caption && <div className="text-sm text-muted-foreground mt-2">{m.caption}</div>}
+        </div>
       );
-    }
-    if (m.type === "video") {
-      return (
-        <figure key={key} className="w-full">
-          <video controls poster={resolve(String(m.poster ?? ""))} className="w-full rounded-lg">
-            <source src={resolve(String(m.src))} />
-          </video>
-          {m.caption && <figcaption className="text-sm text-muted-foreground mt-2">{m.caption}</figcaption>}
-        </figure>
-      );
-    }
-    // embed
-    return (
-      <div key={key} className="aspect-video w-full rounded-lg overflow-hidden">
-        <iframe src={resolve(String(m.src))} title={m.caption ?? "embed"} allowFullScreen className="w-full h-full" />
-        {m.caption && <div className="text-sm text-muted-foreground mt-2">{m.caption}</div>}
-      </div>
-    );
   };
 
   // pseudocode support removed per user request
@@ -162,15 +218,35 @@ export default function RenderAsMarkdown(content: string, media?: MediaItem[], o
         if (p.kind === "text") {
           const block = p.text.trim();
           if (!block) return null;
+          // Render normal text blocks inside a full-bleed gray background so they
+          // visually separate from media (which uses a white full-bleed card).
           return (
-            <div key={i} className="markdown-body prose prose-lg max-w-none">
-              <ReactMarkdown
-                remarkPlugins={[remarkGfm, ...(options?.math ? [remarkMath] : [])]}
-                // when using rehype-katex it may emit raw HTML nodes; include rehypeRaw so they are parsed
-                rehypePlugins={[...(options?.math ? [(rehypeKatex as any), (rehypeRaw as any)] : [])]}
-              >
-                {block}
-              </ReactMarkdown>
+            <div
+              key={i}
+              style={{
+                marginTop: 12,
+                background: "#f7f7f7",
+                padding: 20,
+                borderRadius: 8,
+                width: "100vw",
+                position: "relative",
+                left: "50%",
+                right: "50%",
+                marginLeft: "-50vw",
+                marginRight: "-50vw",
+              }}
+            >
+              <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+                <div className="markdown-body prose prose-lg max-w-none">
+                  <ReactMarkdown
+                    remarkPlugins={[remarkGfm, ...(options?.math ? [remarkMath] : [])]}
+                    // when using rehype-katex it may emit raw HTML nodes; include rehypeRaw so they are parsed
+                    rehypePlugins={[...(options?.math ? [(rehypeKatex as any), (rehypeRaw as any)] : [])]}
+                  >
+                    {block}
+                  </ReactMarkdown>
+                </div>
+              </div>
             </div>
           );
         }
@@ -213,7 +289,23 @@ export default function RenderAsMarkdown(content: string, media?: MediaItem[], o
                   marginRight: "-50vw",
                 }}
               >
-                <div style={{ maxWidth: innerMax, margin: "0 auto" }}>{renderSingle(items[0], i)}</div>
+                <div style={{ maxWidth: innerMax, margin: "0 auto" }}>
+                  {(p as any).captionBlock && (
+                    <>
+                      <div className="markdown-body prose prose-lg max-w-none" style={{ marginBottom: 8 }}>
+                        <ReactMarkdown
+                          remarkPlugins={[remarkGfm, ...(options?.math ? [remarkMath] : [])]}
+                          rehypePlugins={[...(options?.math ? [(rehypeKatex as any), (rehypeRaw as any)] : [])]}
+                        >
+                          {(p as any).captionBlock}
+                        </ReactMarkdown>
+                      </div>
+                      <hr style={{ border: 0, borderTop: '1px solid rgba(15,23,42,0.06)', margin: '8px 0 16px' }} />
+                    </>
+                  )}
+
+                  <div>{renderSingle(items[0], i)}</div>
+                </div>
               </div>
             );
           }
@@ -226,6 +318,7 @@ export default function RenderAsMarkdown(content: string, media?: MediaItem[], o
             return it as any;
           });
 
+          // Render carousel; if captionBlock exists, render it inside the white card above the carousel
           return (
             <div
               key={i}
@@ -243,6 +336,20 @@ export default function RenderAsMarkdown(content: string, media?: MediaItem[], o
               }}
             >
               <div style={{ maxWidth: innerMax, margin: "0 auto" }}>
+                {(p as any).captionBlock && (
+                  <>
+                    <div className="markdown-body prose prose-lg max-w-none" style={{ marginBottom: 8 }}>
+                      <ReactMarkdown
+                        remarkPlugins={[remarkGfm, ...(options?.math ? [remarkMath] : [])]}
+                        rehypePlugins={[...(options?.math ? [(rehypeKatex as any), (rehypeRaw as any)] : [])]}
+                      >
+                        {(p as any).captionBlock}
+                      </ReactMarkdown>
+                    </div>
+                    <hr style={{ border: 0, borderTop: '1px solid rgba(15,23,42,0.06)', margin: '8px 0 16px' }} />
+                  </>
+                )}
+
                 <MediaCarousel items={carouselItems} />
               </div>
             </div>

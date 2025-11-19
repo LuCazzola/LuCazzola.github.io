@@ -16,7 +16,7 @@ const AboutSection: React.FC = () => {
             </p>
 
             <div className="flex items-center gap-4">
-              <a href={asset("/resources/Luca_Cazzola_CV.pdf")} target="_blank" rel="noreferrer">
+              <a href={asset("/resources/Luca_Cazzola_Resume.pdf")} target="_blank" rel="noreferrer">
                 <Button className="bg-primary text-primary-foreground">📄 Resume</Button>
               </a>
             </div>

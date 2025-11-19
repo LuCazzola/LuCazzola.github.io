@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Code, FileText, ChevronDown } from "lucide-react";
 import React, { useState, useRef, useEffect } from "react";
 import RenderAsMarkdown from "@/lib/RenderAsMarkdown";
+import ThreeBallSeparator from "@/components/ThreeBallSeparator";
 
 const ProjectDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -305,15 +306,7 @@ const ProjectDetail = () => {
             {/* Three-ball separator then parsed content (uses site's primary color) */}
             {project.content && (
               <>
-                <section className="my-12 md:my-16" aria-hidden="true">
-                  <div className="flex justify-center">
-                    <div className="flex items-center gap-3 md:gap-4">
-                      <div className="w-3 h-3 md:w-4 md:h-4 rounded-full bg-primary shadow-md transform transition-transform duration-200 hover:scale-110" />
-                      <div className="w-4 h-4 md:w-5 md:h-5 rounded-full bg-primary shadow-lg transform transition-transform duration-200 hover:scale-110" />
-                      <div className="w-3 h-3 md:w-4 md:h-4 rounded-full bg-primary shadow-md transform transition-transform duration-200 hover:scale-110" />
-                    </div>
-                  </div>
-                </section>
+                <ThreeBallSeparator />
                 <section className="mb-12">{RenderAsMarkdown(project.content, project.media, { math: true })}</section>
               </>
             )}

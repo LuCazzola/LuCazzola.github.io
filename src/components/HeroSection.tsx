@@ -30,7 +30,7 @@ const HeroSection = () => {
               className="bg-primary hover:bg-primary-hover text-primary-foreground shadow-md"
               asChild
             >
-              <a href={asset("/resources/Luca_Cazzola_CV.pdf")} target="_blank" rel="noopener noreferrer">
+              <a href={asset("/resources/Luca_Cazzola_Resume.pdf")} target="_blank" rel="noopener noreferrer">
                 <FileText className="mr-2 h-5 w-5" />
                 Resume
               </a>

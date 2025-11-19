@@ -19,7 +19,7 @@ export type Publication = {
   image?: string;
   media?: Array<{ type: "image" | "video" | "embed"; src: string; caption?: string }>;
   tags?: string[];
-  summary?: string;
+  abstract?: string;
   content?: string;
 };
 

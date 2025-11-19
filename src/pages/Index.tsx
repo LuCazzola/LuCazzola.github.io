@@ -110,11 +110,11 @@ const Index = () => {
                         )}
                       </div>
 
-                      {/* Summary shown on the landing card below venue/year */}
-                      {p.summary && (
+                      {/* Abstract shown on the landing card below venue/year */}
+                      {p.abstract && (
                         <>
                           <hr className="border-t border-sky-100 my-3" />
-                          <p className="mt-2 text-sm text-muted-foreground">{p.summary}</p>
+                          <p className="mt-2 text-sm text-muted-foreground">{p.abstract}</p>
                         </>
                       )}
 

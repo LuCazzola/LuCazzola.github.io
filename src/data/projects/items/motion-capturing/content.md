@@ -8,11 +8,11 @@ The system requires a minimum number of cameras (usually three) to accurately tr
 
 We can visualize the raw, unprocessed data easily enough in a tool like Python's Matplotlib, but the defect is clear:
 
-[MEDIA:1:0.5]
+[MEDIA:1:0.4]
 
 The issue becomes more pronounced in complex, fast-moving scenarios, leading to noticeable **flickering**, which is what we need to solve:
 
-[MEDIA:2:0.5]
+[MEDIA:2:0.4]
 
 ---
 
@@ -22,11 +22,11 @@ To fix the lost information, we apply **external tracking**—specifically, pred
 
 1.  **Kalman Filter:** This is the most popular choice for tracking motion, especially for rigid bodies, as it effectively handles noise and predicts future states based on a linear model. The application resulted in a much smoother sequence, successfully filling the gaps. While some minor shaking is visible due to the motion's unpredictability, the result is quite good without any further processing:
 
-[MEDIA:3:0.5]
+[MEDIA:3:0.4]
 
 2.  **Particle Filter:** This filter models movement stochastically, using a set of weighted particles. Its inherent nature makes it less suited for tracking rigid bodies, as it struggles to retain the fixed, correlated structure of a skeleton. Without a complex objective function to enforce the rigid body constraints between particles tracking different markers, the result was less stable:
 
-[MEDIA:4:0.5]
+[MEDIA:4:0.4]
 
 ---
 
@@ -36,7 +36,7 @@ To test our projection methods and generate reliable ground truth data, we creat
 
 This was our first venture into UE, so we leveraged **Blueprints (BP)**—UE's visual node-graph scripting system—instead of C++. We modeled the scene, positioned the actors (skeleton and camera), and used UE5's animation retargeting feature to easily map a provided animation onto a free skeleton from **Adobe Mixamo**.
 
-[MEDIA:5]
+[MEDIA:5:0.8]
 
 A **Level Sequencer** component was then used to capture the virtual camera's video feed. Crucially, we implemented a custom BP script using the JSON utility plugin to systematically extract all necessary data into a JSON format for every frame:
 * **Bones:** Position ($\{x,y,z\}$) and Quaternion Rotation ($\{x, y, z, w \}$) for every bone in the skeleton.
@@ -59,7 +59,7 @@ All the pose data extracted from UE had to be converted via a **change of basis*
 
 Once the joint and camera world coordinates were consistent, we extracted the camera's **intrinsic parameters**. Since our virtual environment is controlled and has no lens distortion, we were able to compute these directly via algebra instead of using traditional camera calibration. Finally, applying the transformation with OpenCV's built-in `cv.projectPoints()` function successfully displaced the skeletal structure onto the image plane.
 
-[MEDIA:6]
+[MEDIA:6:0.8]
 
 ---
 
@@ -67,4 +67,4 @@ Once the joint and camera world coordinates were consistent, we extracted the ca
 
 While Matplotlib helped us visualize the raw data, for more suitable and sophisticated result evaluation, we forwarded the processed data to **Blender**. We based this work on the [deep-motion-editing](https://github.com/DeepMotionEditing/deep-motion-editing) repository, which provides a framework for interacting with Blender's Python APIs to build custom, skeleton-aware neural network applications.
 
-[MEDIA:7]
+[MEDIA:7:0.8]
