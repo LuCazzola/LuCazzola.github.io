@@ -2,7 +2,7 @@ import type { Publication } from "@/data/publications";
 import { asset } from "@/lib/asset";
 
 const publication: Publication = {
-  title: "Kinetic Mining in Context: Few-Shot Action Synthesis via \n Text-to-Motion Distillation",
+  title: "Kinetic Mining in Context: Few-Shot Action Synthesis via \n Text-to-Motion priors",
   // authors: list of [displayName, optionalLink]
   authors: [
     ["L. Cazzola", "/"],
@@ -14,7 +14,7 @@ const publication: Publication = {
   pdf: asset("/resources/pubs/kinemic.pdf"),
   image: asset("/media/kinemic/panel_full.png"),
   tags: ["Few-Shot", "Motion Generation"],
-  abstract: "The high cost of acquiring large-scale annotated motion datasets fundamentally limits skeletal-based Human Activity Recognition (HAR). While text-to-motion generative models offer a promising solution, their development has focused on artistic workflows like avatar animation. Consequently, they are trained on vast datasets that, despite immense variety, lack the kinematic specificity required for HAR tasks, creating a significant domain gap. To bridge this gap, we propose KineMIC (Kinetic Mining In Context), a transfer learning framework for few-shot action synthesis. Our approach is built on the hypothesis that semantic similarity in the text encoding space—comparing sparse action labels to rich captions—can provide \"soft\" guidance towards kinematic similarity in the motion domain. To operationalize this, we introduce a kinetic mining strategy that uses CLIP text embeddings to create \"soft pairings\" between target actions and rich source descriptions. These pairings guide a training process that identifies relevant sub-sequences from the large-scale dataset, transforming the generalist text-to-motion model into a specialized, few-shot action-to-motion generator. Ultimately, our framework generates synthetic motion from as few as 10 samples per class, providing a robust data augmentation strategy that significantly enhances the performance of downstream HAR models.",
+  abstract: "The acquisition cost for large, annotated motion datasets is a critical bottleneck for skeletal-based Human Activity Recognition (HAR). Although powerful Text-to-Motion (T2M) generative models offer a compelling, scalable source of data, their training goals, which focus on general, artistic motion, and their dataset structure fundamentally differ from the requirements of HAR. This disparity results in a significant domain gap, making these models ill-equipped for generating kinematically precise actions. To address this challenge, we propose KineMIC (Kinetic Mining In Context), a transfer learning framework for few-shot action synthesis. KineMIC adapts a general T2M diffusion model for the HAR domain by hypothesizing that semantic correspondence in the pretrained text encoding space can provide the soft supervision needed for kinematic distillation. We operationalize this via a kinetic mining strategy that leverages CLIP text embeddings to establish semantic pairings between sparse HAR labels and the T2M source data. This specialized process guides the fine-tuning of the diffusion model, transforming the generalist T2M backbone into a few-shot Action-to-Motion generator. KineMIC generates synthetic data from as little as 10 real samples per class, validating the framework by enhancing the accuracy of a downstream HAR classifier",
   media: [
     { 
       type: "video",
