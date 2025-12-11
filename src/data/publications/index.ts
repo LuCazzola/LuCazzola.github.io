@@ -18,6 +18,7 @@ export type Publication = {
   code?: string;
   image?: string;
   media?: Array<{ type: "image" | "video" | "embed"; src: string; caption?: string }>;
+  supplementary?: string;
   tags?: string[];
   abstract?: string;
   content?: string;

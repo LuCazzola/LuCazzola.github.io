@@ -42,6 +42,9 @@ const buildVideoSources = (s?: string) => {
 const MediaCarousel: React.FC<MediaCarouselProps> = ({ items }) => {
   // (removed previous `index` state; we use slideIndex and compute currentIndex)
   const [maxHeight, setMaxHeight] = useState<number | null>(null);
+  const [currentHeight, setCurrentHeight] = useState<number | null>(null);
+  const MOBILE_BREAKPOINT = 640; // px
+  const [isMobile, setIsMobile] = useState<boolean>(typeof window !== 'undefined' ? (window.innerWidth <= MOBILE_BREAKPOINT) : false);
   const DEFAULT_HEIGHT = 320; // fallback height while we measure
   const slideRefs = useRef<Array<HTMLDivElement | null>>([]);
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -65,11 +68,23 @@ const MediaCarousel: React.FC<MediaCarouselProps> = ({ items }) => {
     // measure each slide's height and set the max
     const heights = slideRefs.current.map((el) => {
       if (!el) return 0;
-      // use scrollHeight to capture intrinsic content height
       return el.scrollHeight || el.getBoundingClientRect().height || 0;
     });
     const max = Math.max(...heights, 0);
     if (max > 0) setMaxHeight(max);
+
+    // If on mobile, avoid forcing a pixel height — let the container size naturally
+    if (isMobile) {
+      setCurrentHeight(null);
+    } else {
+      // prefer sizing to the currently visible slide to avoid large whitespace
+      const currentEl = slideRefs.current[slideIndex];
+      const curH = currentEl ? (currentEl.scrollHeight || currentEl.getBoundingClientRect().height || 0) : 0;
+      // clamp current height so it never exceeds 80% of viewport height (helps on small screens)
+      const viewportLimit = Math.max(180, Math.floor((window.innerHeight || 800) * 0.8));
+      const finalCur = Math.min(curH || max || DEFAULT_HEIGHT, viewportLimit);
+      if (finalCur > 0) setCurrentHeight(finalCur);
+    }
   }, []);
 
   // Re-measure when items change
@@ -84,6 +99,24 @@ const MediaCarousel: React.FC<MediaCarouselProps> = ({ items }) => {
       window.removeEventListener("resize", measure);
     };
   }, [items, measure]);
+
+  // Re-measure when slideIndex changes (adjacent slides may mount/unmount)
+  useEffect(() => {
+    measure();
+    const t = setTimeout(measure, 120);
+    return () => clearTimeout(t);
+  }, [slideIndex, measure, isMobile]);
+
+  // update `isMobile` and re-measure on resize
+  useEffect(() => {
+    const onResize = () => {
+      const mobile = window.innerWidth <= MOBILE_BREAKPOINT;
+      setIsMobile(mobile);
+      measure();
+    };
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, [measure]);
 
   // handlers to re-measure when media loads
   const onMediaLoad = () => {
@@ -154,92 +187,117 @@ const MediaCarousel: React.FC<MediaCarouselProps> = ({ items }) => {
 
   return (
     <div className="w-full">
-      {/* Title for the current slide (rendered separately above the media) */}
-      {current?.title && (
-        <div style={{ textAlign: 'center', fontSize: 16, fontWeight: 600, marginBottom: 8 }}>{current.title}</div>
-      )}
+      {/* Title is rendered per-slide just above the media to keep it close to content */}
 
       <div
         ref={containerRef}
         className="relative w-full rounded-md overflow-hidden bg-white"
-        style={{ height: maxHeight ? `${maxHeight}px` : `${DEFAULT_HEIGHT}px` }}
+        style={{ height: currentHeight ? `${currentHeight}px` : (maxHeight ? `${maxHeight}px` : `${DEFAULT_HEIGHT}px`) }}
       >
         {/* track */}
         <div
           ref={trackRef}
           className="w-full h-full"
           style={{
-            width: `${slides.length * 100}%`,
-            display: "flex",
-            transition: disableTransition ? "none" : "transform 420ms ease",
-            transform: `translateX(-${slideIndex * (100 / Math.max(slides.length, 1))}%)`,
-            willChange: "transform",
-            height: "100%",
-          }}
+              width: `${slides.length * 100}%`,
+              display: "flex",
+              transition: disableTransition ? "none" : "transform 420ms ease",
+              transform: `translateX(-${slideIndex * (100 / Math.max(slides.length, 1))}%)`,
+              willChange: "transform",
+              height: currentHeight ? "100%" : "auto",
+            }}
         >
-          {slides.map((it, i) => (
-            <div
-              key={i}
-              ref={(el) => (slideRefs.current[i] = el)}
-              className="w-full flex-shrink-0"
-              style={{ width: `${100 / Math.max(slides.length, 1)}%`, height: "100%", display: 'flex', flexDirection: 'column', background: 'white' }}
-            >
-              {it.type === "image" && (
-                <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-                  {/* title intentionally rendered above the carousel as a separate element */}
-                  <div style={{ marginTop: 'auto', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <img
-                      src={it.src}
-                      alt={it.caption ?? 'media'}
-                      className="w-full h-auto"
-                      onLoad={onMediaLoad}
-                      style={{ display: 'block', maxHeight: '100%', maxWidth: '100%', objectFit: 'contain', position: 'relative', zIndex: 2, pointerEvents: 'auto' }}
-                    />
-                  </div>
-                </div>
-              )}
+          {slides.map((it, i) => {
+            // map slide index to original items index
+            const realIndex = items.length > 1 ? ((i - 1 + items.length) % items.length) : i;
+            // compute circular distance between realIndex and currentIndex
+            const n = Math.max(items.length, 1);
+            const diff = Math.abs(realIndex - currentIndex);
+            const circularDistance = Math.min(diff, n - diff);
+            // only mount heavy elements (video/iframe) for current +/- 1
+            const shouldMountHeavy = circularDistance <= 1;
 
-              {it.type === "video" && (
-                <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-                  {/* title intentionally rendered above the carousel as a separate element */}
-                  <div style={{ marginTop: 'auto', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <video
-                      controls
-                      loop
-                      muted
-                      playsInline
-                      preload="metadata"
-                      poster={it.poster}
-                      className="w-auto h-auto"
-                      onLoadedMetadata={onMediaLoad}
-                      style={{ maxHeight: '100%', maxWidth: '100%', background: 'black', position: 'relative', zIndex: 2, pointerEvents: 'auto', objectFit: 'contain' }}
-                    >
-                      {buildVideoSources(it.src).map((src, idx) => (
-                        <source key={idx} src={src} {...(mimeFor(src) ? { type: mimeFor(src) } : {})} />
-                      ))}
-                      Your browser does not support the video tag.
-                    </video>
+            return (
+              <div
+                key={i}
+                ref={(el) => (slideRefs.current[i] = el)}
+                className="w-full flex-shrink-0"
+              style={{ width: `${100 / Math.max(slides.length, 1)}%`, height: currentHeight ? "100%" : "auto", display: 'flex', flexDirection: 'column', background: 'white' }}
+              >
+                {it.type === "image" && (
+                  <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                    <div style={{ marginTop: 'auto', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
+                      {it.title && <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 6, textAlign: 'center' }}>{it.title}</div>}
+                      <img
+                        src={it.src}
+                        alt={it.caption ?? 'media'}
+                        className="w-full h-auto"
+                        onLoad={onMediaLoad}
+                        loading="lazy"
+                        style={{ display: 'block', maxHeight: '100%', maxWidth: '100%', objectFit: 'contain', position: 'relative', zIndex: 2, pointerEvents: 'auto' }}
+                      />
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
 
-              {it.type === "embed" && (
-                <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-                  {/* title intentionally rendered above the carousel as a separate element */}
-                  <div style={{ marginTop: 'auto', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <iframe
-                      src={it.src}
-                      title={it.caption ?? 'embed'}
-                      className="w-full h-auto"
-                      onLoad={onMediaLoad}
-                      style={{ border: 0, maxHeight: '100%', maxWidth: '100%', position: 'relative', zIndex: 2, pointerEvents: 'auto' }}
-                      allowFullScreen
-                    />
+                {it.type === "video" && (
+                  <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                    <div style={{ marginTop: 'auto', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
+                      {it.title && <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 6, textAlign: 'center' }}>{it.title}</div>}
+                      {shouldMountHeavy ? (
+                        <video
+                          controls
+                          loop
+                          muted
+                          playsInline
+                          preload="metadata"
+                          poster={it.poster}
+                          className="w-auto h-auto"
+                          onLoadedMetadata={onMediaLoad}
+                          style={{ maxHeight: '100%', maxWidth: '100%', background: 'black', position: 'relative', zIndex: 2, pointerEvents: 'auto', objectFit: 'contain' }}
+                        >
+                          {buildVideoSources(it.src).map((src, idx) => (
+                            <source key={idx} src={src} {...(mimeFor(src) ? { type: mimeFor(src) } : {})} />
+                          ))}
+                          Your browser does not support the video tag.
+                        </video>
+                      ) : (
+                        <div style={{ width: '100%', height: 180, background: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          {it.poster ? (
+                            <img src={it.poster} alt={it.caption ?? 'poster'} style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
+                          ) : (
+                            <div style={{ color: '#fff', opacity: 0.8 }}>Video</div>
+                          )}
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
-              )}
-            </div>
-          ))}
+                )}
+
+                {it.type === "embed" && (
+                  <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                    <div style={{ marginTop: 'auto', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
+                      {it.title && <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 6, textAlign: 'center' }}>{it.title}</div>}
+                      {shouldMountHeavy ? (
+                        <iframe
+                          src={it.src}
+                          title={it.caption ?? 'embed'}
+                          className="w-full h-auto"
+                          onLoad={onMediaLoad}
+                          style={{ border: 0, maxHeight: '100%', maxWidth: '100%', position: 'relative', zIndex: 2, pointerEvents: 'auto' }}
+                          allowFullScreen
+                        />
+                      ) : (
+                        <div style={{ width: '100%', height: 180, background: '#eee', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <div style={{ color: '#666' }}>Embed</div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
         {items.length > 1 && (
           <>

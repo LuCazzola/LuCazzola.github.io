@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { FileText, Archive, Code } from "lucide-react";
+import { FileText, Archive, Code, Download } from "lucide-react";
 import { useParams, Navigate, Link, useNavigate } from "react-router-dom";
 import { getPublicationById } from "@/data/publications";
 import RenderAsMarkdown from "@/lib/RenderAsMarkdown";
@@ -173,7 +173,7 @@ const PublicationDetail = () => {
                 )}
               </div>
 
-              <div className="mt-4 flex gap-3 justify-center items-center">
+              <div className="mt-4 flex gap-3 justify-center items-center" style={{ flexWrap: 'wrap' }}>
                 {/* Paper (PDF) */}
                 {pub.pdf ? (
                   <a
@@ -189,6 +189,24 @@ const PublicationDetail = () => {
                     <button disabled aria-label="Paper coming soon" className="inline-flex items-center gap-2 rounded-md px-3 py-2 border border-gray-200 text-gray-700 opacity-50 cursor-not-allowed">
                       <FileText size={16} />
                       <span>Paper (PDF)</span>
+                    </button>
+                  </DisabledTooltip>
+                )}
+                {/* Supplementary materials (zip, additional files) - placed after PDF */}
+                {pub.supplementary ? (
+                  <a
+                    href={pub.supplementary}
+                    download
+                    className="inline-flex items-center gap-2 rounded-md px-3 py-2 bg-gray-700 text-white border border-gray-700 transform transition-transform duration-150 hover:scale-105 hover:shadow-lg"
+                  >
+                    <Download size={16} />
+                    <span>Supplementary</span>
+                  </a>
+                ) : (
+                  <DisabledTooltip text="No supplementary material">
+                    <button disabled aria-label="Supplementary not available" className="inline-flex items-center gap-2 rounded-md px-3 py-2 border border-gray-200 text-gray-700 opacity-50 cursor-not-allowed">
+                      <Download size={16} />
+                      <span>Supplementary</span>
                     </button>
                   </DisabledTooltip>
                 )}
