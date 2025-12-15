@@ -25,6 +25,14 @@ KineMIC exhibits emergent motion composition. Trained with aligned action labels
 ## 💜 Cite us
 
 ```bash
-Work In Progress
+@misc{cazzola2025kineticminingcontextfewshot,
+      title={Kinetic Mining in Context: Few-Shot Action Synthesis via Text-to-Motion Distillation}, 
+      author={Luca Cazzola and Ahed Alboody},
+      year={2025},
+      eprint={2512.11654},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV},
+      url={https://arxiv.org/abs/2512.11654}, 
+}
 ```
 
