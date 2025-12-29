@@ -5,8 +5,8 @@ const publication: Publication = {
   title: "Kinetic Mining in Context: Few-Shot Action Synthesis via \n Text-to-Motion Distillation",
   // authors: list of [displayName, optionalLink]
   authors: [
-    ["L. Cazzola", "/"],
-    ["A. Alboody", "https://scholar.google.com/citations?user=DOoU5dEAAAAJ&hl=it&oi=ao"],
+    ["L. Cazzola", "https://scholar.google.com/citations?user=fsnsqoYAAAAJ&hl=en"],
+    ["A. Alboody", "https://scholar.google.com/citations?user=DOoU5dEAAAAJ&hl=en"],
   ],
   affiliations: "University of Trento; CESI LINEACT",
   venue: "?",
@@ -215,6 +215,67 @@ const publication: Publication = {
       title: "'a person is jumping' + 'stretch on self'",
       caption: "The avatar explosively raises both arms overhead and proceeds performing a big jump." 
     },
+    ////////////////////////////////////////////////////////////////////////////////////
+    { 
+      type: "video",
+      src: asset("/media/kinemic/renders/comparison/mdm_pretrained_gen_1.mp4"),
+      title: "Pre-trained MDM (1)",
+      caption: "Pre-trained MDM (1)" 
+    },
+    { 
+      type: "video",
+      src: asset("/media/kinemic/renders/comparison/mdm_pretrained_gen_2.mp4"),
+      title: "Pre-trained MDM (2)",
+      caption: "Pre-trained MDM (2)" 
+    },
+    { 
+      type: "video",
+      src: asset("/media/kinemic/renders/comparison/mdm_pretrained_gen_3.mp4"),
+      title: "Pre-trained MDM (3)",
+      caption: "Pre-trained MDM (3)" 
+    },
+    { 
+      type: "video",
+      src: asset("/media/kinemic/renders/comparison/mdm_pretrained_gen_4.mp4"),
+      title: "Pre-trained MDM (4)",
+      caption: "Pre-trained MDM (4)" 
+    },
+    { 
+      type: "video",
+      src: asset("/media/kinemic/renders/comparison/mdm_pretrained_gen_5.mp4"),
+      title: "Pre-trained MDM (5)",
+      caption: "Pre-trained MDM (5)" 
+    },
+    { 
+      type: "video",
+      src: asset("/media/kinemic/renders/comparison/kinemic_gen_1.mp4"),
+      title: "KineMIC (1)",
+      caption: "KineMIC (1)" 
+    },
+        { 
+      type: "video",
+      src: asset("/media/kinemic/renders/comparison/kinemic_gen_2.mp4"),
+      title: "KineMIC (2)",
+      caption: "KineMIC (2)" 
+    },
+        { 
+      type: "video",
+      src: asset("/media/kinemic/renders/comparison/kinemic_gen_3.mp4"),
+      title: "KineMIC (3)",
+      caption: "KineMIC (3)" 
+    },
+        { 
+      type: "video",
+      src: asset("/media/kinemic/renders/comparison/kinemic_gen_4.mp4"),
+      title: "KineMIC (4)",
+      caption: "KineMIC (4)" 
+    },
+    { 
+      type: "video",
+      src: asset("/media/kinemic/renders/comparison/kinemic_gen_5.mp4"),
+      title: "KineMIC (5)",
+      caption: "KineMIC (5)" 
+    },  
   ],
 };
 
