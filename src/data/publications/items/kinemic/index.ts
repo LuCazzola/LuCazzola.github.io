@@ -14,7 +14,7 @@ const publication: Publication = {
   arxiv: "https://arxiv.org/abs/2512.11654",
   image: asset("/media/kinemic/panel_full.png"),
   supplementary: asset("/resources/pubs/kinemic_supplementary_material.zip"),
-  tags: ["Human Motion Synthesis", "Few-Shot Action-to-Motion Generation", "Human Activity Recognition", "Synthetic Data Generation"],
+  tags: ["Human Motion Synthesis", "Few-Shot Learning", "Action-to-Motion", "Text-to-Motion", "Human Activity Recognition", "Synthetic Data Generation"],
   abstract: "The acquisition cost for large, annotated motion datasets remains a critical bottleneck for skeletal-based Human Activity Recognition (HAR). Although Text-to-Motion (T2M) generative models offer a compelling, scalable source of synthetic data, their training objectives, which emphasize general artistic motion, and dataset structures fundamentally differ from HAR's requirements for kinematically precise, class-discriminative actions. This disparity creates a significant domain gap, making generalist T2M models ill-equipped for generating motions suitable for HAR classifiers. To address this challenge, we propose KineMIC (Kinetic Mining In Context), a transfer learning framework for few-shot action synthesis. KineMIC adapts a T2M diffusion model to an HAR domain by hypothesizing that semantic correspondences in the text encoding space can provide soft supervision for kinematic distillation. We operationalize this via a kinetic mining strategy that leverages CLIP text embeddings to establish correspondences between sparse HAR labels and T2M source data. This process guides fine-tuning, transforming the generalist T2M backbone into a specialized few-shot Action-to-Motion generator. We validate KineMIC using HumanML3D as the source T2M dataset and a subset of NTU RGB+D 120 as the target HAR domain, randomly selecting just 10 samples per action class. Our approach generates significantly more coherent motions, providing a robust data augmentation source that delivers a +23.1% accuracy points improvement.",
   media: [
     { 
@@ -248,6 +248,12 @@ const publication: Publication = {
     },
     { 
       type: "video",
+      src: asset("/media/kinemic/renders/comparison/mdm_pretrained_gen_6.mp4"),
+      title: "Pre-trained MDM (6)",
+      caption: "Pre-trained MDM (6)" 
+    },
+    { 
+      type: "video",
       src: asset("/media/kinemic/renders/comparison/kinemic_gen_1.mp4"),
       title: "KineMIC (1)",
       caption: "KineMIC (1)" 
@@ -275,6 +281,12 @@ const publication: Publication = {
       src: asset("/media/kinemic/renders/comparison/kinemic_gen_5.mp4"),
       title: "KineMIC (5)",
       caption: "KineMIC (5)" 
+    },  
+    { 
+      type: "video",
+      src: asset("/media/kinemic/renders/comparison/kinemic_gen_6.mp4"),
+      title: "KineMIC (6)",
+      caption: "KineMIC (6)" 
     },  
   ],
 };

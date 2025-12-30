@@ -75,6 +75,7 @@ export default function RenderAsMarkdown(content: string, media?: MediaItem[], o
   const parts: Array<
     | { kind: "text"; text: string }
     | { kind: "media"; indices: Array<number | "placeholder">; scale?: number; captionBlock?: string }
+    | { kind: "sideBySide"; scale?: number; items: Array<{ indices: Array<number | "placeholder">; caption?: string }> }
     | { kind: "placeholder" }
     | { kind: "space"; size: string }
   > = [];
@@ -83,26 +84,62 @@ export default function RenderAsMarkdown(content: string, media?: MediaItem[], o
   // [MEDIA:1-2-3:0.8] -> explicit list + scale (0.0-1.0) controlling inner media width
   // [MEDIA...] -> placeholder shorthand (renders the local placeholder)
   // [MEDIA:1-2]{some text} -> optional `{...}` immediately after token becomes markdown rendered inside the white media card
+  // [MEDIA-SIDE-BY-SIDE:0.8][MEDIA:1-3]{title}[MEDIA:4-6]{title}[/MEDIA-SIDE-BY-SIDE] -> side-by-side layout with individual titles
   // allow '?' inside the MEDIA list to indicate a placeholder slot, e.g. [MEDIA:1-?-3]
-  // capture groups: 1=indices,2=scale,3=braceText for first form,4=braceText for placeholder form,5=spacing
-  const tokenRegex = /\[MEDIA:([0-9?\-\s,]+)(?::([0-9.]+))?\](?:\{([^}]+)\})?|\[MEDIA\.\.\.\](?:\{([^}]+)\})?|\[SPACING:(small|medium|large|xlarge)\]/gi;
+  
+  // First, extract side-by-side blocks
+  const sideBySideRegex = /\[MEDIA-SIDE-BY-SIDE:([0-9.]+)\]([\s\S]*?)\[\/MEDIA-SIDE-BY-SIDE\]/gi;
+  let processedContent = content;
+  const sideBySideBlocks = new Map<string, any>();
+  
+  // Use replaceAll pattern to handle all matches
+  processedContent = content.replace(sideBySideRegex, (fullMatch, scale, blockContent) => {
+    // Extract individual [MEDIA:...] blocks within this side-by-side block
+    const mediaItemRegex = /\[MEDIA:([0-9?\-\s,]+)\](?:\{([^}]+)\})?/gi;
+    const items: Array<{ indices: Array<number | "placeholder">; caption?: string }> = [];
+    let mediaMatch: RegExpExecArray | null;
+    
+    while ((mediaMatch = mediaItemRegex.exec(blockContent)) !== null) {
+      const inds = parseIndices(mediaMatch[1]);
+      const caption = mediaMatch[2];
+      items.push({ indices: inds, caption });
+    }
+    
+    // Store this block with a placeholder ID
+    const blockId = `__SIDE_BY_SIDE_${sideBySideBlocks.size}__`;
+    sideBySideBlocks.set(blockId, { scale: scale ? parseFloat(scale) : undefined, items });
+    
+    return blockId;
+  });
+  
+  // Now parse the rest of the content
+  const tokenRegex = /\[MEDIA:([0-9?\-\s,]+)(?::([0-9.]+))?\](?:\{([^}]+)\})?|\[MEDIA\.\.\.\](?:\{([^}]+)\})?|\[SPACING:(small|medium|large|xlarge)\]|(__SIDE_BY_SIDE_\d+__)/gi;
   let lastIndex = 0;
   let match: RegExpExecArray | null;
-  while ((match = tokenRegex.exec(content)) !== null) {
+  while ((match = tokenRegex.exec(processedContent)) !== null) {
     if (match.index > lastIndex) {
-      parts.push({ kind: "text", text: content.slice(lastIndex, match.index) });
+      parts.push({ kind: "text", text: processedContent.slice(lastIndex, match.index) });
+    }
+    
+    // Check if this is a side-by-side placeholder
+    if (match[6]) {
+      const blockData = sideBySideBlocks.get(match[6]);
+      if (blockData) {
+        parts.push({ kind: "sideBySide", scale: blockData.scale, items: blockData.items } as any);
+      }
     }
     // match[0] contains the full matched string. We support three forms:
     // - [MEDIA:...] where match[1] holds the numeric token list and match[2] optional scale and match[3] optional brace text
     // - [MEDIA...] literal placeholder where match[4] may hold optional brace text
     // - [SPACING:...] where match[5] holds the size
-    const braceText = match[3] ?? match[4] ?? undefined;
-    if (match[1] !== undefined) {
+    else if (match[1] !== undefined) {
+      const braceText = match[3] ?? undefined;
       const inds = parseIndices(match[1]);
       const scale = match[2] ? parseFloat(match[2]) : undefined;
       parts.push({ kind: "media", indices: inds, scale, ...(braceText ? { captionBlock: braceText } : {}) } as any);
     } else if (/^\[MEDIA\.\.\.\]/i.test(match[0])) {
       // placeholder shorthand -> render a dedicated placeholder element; attach braceText if present
+      const braceText = match[4] ?? undefined;
       if (braceText) {
         parts.push({ kind: "media", indices: ["placeholder"], ...(braceText ? { captionBlock: braceText } : {}) } as any);
       } else {
@@ -113,7 +150,7 @@ export default function RenderAsMarkdown(content: string, media?: MediaItem[], o
     }
     lastIndex = tokenRegex.lastIndex;
   }
-  if (lastIndex < content.length) parts.push({ kind: "text", text: content.slice(lastIndex) });
+  if (lastIndex < processedContent.length) parts.push({ kind: "text", text: processedContent.slice(lastIndex) });
 
   // render helper for a single media item
   const renderSingle = (m?: MediaItem, key?: React.Key) => {
@@ -215,6 +252,151 @@ export default function RenderAsMarkdown(content: string, media?: MediaItem[], o
   return (
     <div className="space-y-6">
       {parts.map((p, i) => {
+        if (p.kind === "sideBySide") {
+          // Side-by-side layout with responsive fallback to column
+          const rawScale = typeof (p as any).scale === "number" && !Number.isNaN((p as any).scale) ? (p as any).scale : 1;
+          const scale = Math.max(0.05, rawScale); // Allow values > 1.0
+          const innerMax = Math.round(1200 * scale); // Scales up if > 1.0, but will fit in viewport if smaller
+          const items = (p as any).items;
+          const containerId = `sidebyside-${i}`;
+          
+          const renderMediaContent = (itemInfo: { indices: Array<number | "placeholder">; caption?: string }) => {
+            const columnItems = itemInfo.indices.map((entry) => {
+              if (entry === "placeholder") {
+                return { type: "image", src: asset("/media/placeholder.svg"), caption: "Placeholder" } as MediaItem;
+              }
+              return media?.[entry as number];
+            }).filter(Boolean) as MediaItem[];
+            
+            if (columnItems.length === 0) {
+              return (
+                <div style={{ color: "#666" }}>
+                  <em>No media available</em>
+                </div>
+              );
+            }
+            
+            if (columnItems.length === 1) {
+              return renderSingle(columnItems[0], `${i}-col`);
+            }
+            
+            // Multiple items -> carousel
+            const carouselItems = columnItems.map((it) => {
+              if ((it as any).type === "gif") {
+                return { type: "image", src: (it as any).src, caption: (it as any).caption };
+              }
+              return it as any;
+            });
+            
+            return <MediaCarousel items={carouselItems} />;
+          };
+          
+          return (
+            <>
+              <style>{`
+                @media (min-width: 769px) {
+                  #${containerId} .sidebyside-container {
+                    display: flex;
+                    flex-direction: column;
+                    height: 100%;
+                    min-width: 0;
+                  }
+                  #${containerId} .sidebyside-caption {
+                    flex: 0 0 auto;
+                  }
+                  #${containerId} .sidebyside-media {
+                    flex: 0 0 auto;
+                    margin-top: auto;
+                    min-width: 0;
+                  }
+                  #${containerId} .sidebyside-grid {
+                    gap: 2rem;
+                  }
+                }
+                @media (max-width: 768px) {
+                  #${containerId} .sidebyside-grid {
+                    grid-template-columns: 1fr !important;
+                    gap: 1.5rem;
+                  }
+                  #${containerId} .sidebyside-media {
+                    margin-top: 0.75rem;
+                  }
+                  #${containerId} .sidebyside-inner {
+                    padding: 0 1rem;
+                  }
+                }
+                #${containerId} .sidebyside-container {
+                  min-width: 0;
+                  overflow: hidden;
+                }
+                #${containerId} .sidebyside-grid {
+                  min-width: 0;
+                }
+                #${containerId} .sidebyside-media {
+                  min-width: 0;
+                  max-width: 100%;
+                }
+                #${containerId} .sidebyside-media > * {
+                  max-width: 100%;
+                  min-width: 0;
+                }
+                #${containerId} .sidebyside-media img,
+                #${containerId} .sidebyside-media video,
+                #${containerId} .sidebyside-media iframe {
+                  max-width: 100%;
+                  width: 100%;
+                  height: auto;
+                  display: block;
+                }
+                #${containerId} .sidebyside-media figure {
+                  max-width: 100%;
+                  min-width: 0;
+                  overflow: hidden;
+                  margin: 0;
+                }
+              `}</style>
+              <div
+                key={i}
+                id={containerId}
+                style={{
+                  marginTop: 12,
+                  background: "#fff",
+                  padding: 12,
+                  borderRadius: 8,
+                  width: "100vw",
+                  position: "relative",
+                  left: "50%",
+                  right: "50%",
+                  marginLeft: "-50vw",
+                  marginRight: "-50vw",
+                }}
+              >
+                <div className="sidebyside-inner" style={{ maxWidth: innerMax, margin: "0 auto", width: "100%", boxSizing: "border-box" }}>
+                  {/* Each item contains its own caption + media, with flex layout for alignment */}
+                  <div className="sidebyside-grid" style={{ display: "grid", gridTemplateColumns: `repeat(${items.length}, 1fr)`, alignItems: "end" }}>
+                    {items.map((itemInfo, idx) => (
+                      <div key={idx} className="sidebyside-container">
+                        <div className="sidebyside-caption">
+                          {itemInfo.caption && (
+                            <div className="markdown-body prose prose-lg max-w-none">
+                              <ReactMarkdown
+                                remarkPlugins={[remarkGfm, ...(options?.math ? [remarkMath] : [])]}
+                                rehypePlugins={[...(options?.math ? [(rehypeKatex as any), (rehypeRaw as any)] : [])]}
+                              >
+                                {itemInfo.caption}
+                              </ReactMarkdown>
+                            </div>
+                          )}
+                        </div>
+                        <div className="sidebyside-media">{renderMediaContent(itemInfo)}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </>
+          );
+        }
         if (p.kind === "text") {
           const block = p.text.trim();
           if (!block) return null;
@@ -271,6 +453,7 @@ export default function RenderAsMarkdown(content: string, media?: MediaItem[], o
           }
           const scale = typeof p.scale === "number" && !Number.isNaN(p.scale) ? Math.max(0.05, Math.min(1, p.scale)) : 1;
           const innerMax = Math.round(1200 * scale);
+          
           if (items.length === 1) {
             return (
               // full-bleed white background that spans the viewport width

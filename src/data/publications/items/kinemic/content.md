@@ -26,9 +26,10 @@ An emergent property is the model's ability to perform motion composition. While
 
 KineMIC significantly improves motion relatedness to the target domain compared to the base pre-trained model. While pre-trained MDM often struggles to adhere to expected high-level kinematics—even for seemingly simple actions—KineMIC facilitates a crucial specialization process that bridges the domain gap.
 
-[MEDIA:34-35-36-37-38:0.8]{**Pre-Trained MDM.** While the generalist MDM can generate motion from text, it lacks domain-specific guidance, leading to frequent artifacts. For example, 'side kicks' are often truncated mid-animation or substituted with front kicks. Actions like 'stretch on self' exhibit excessive, erratic variety that diverges from the target kinematic distribution, with some samples failing to align with the text prompts entirely.}
-
-[MEDIA:39-40-41-42-43:0.8]{**KineMIC.** Generated samples stay more faithful to high level kinematics of the few-shot target set. By localizing variety to the necessary motion windows, KineMIC produces more stable and representative samples—a critical factor for training reliable HAR classifiers.}
+[MEDIA-SIDE-BY-SIDE:1.35]
+[MEDIA:34-35-36-37-38-39]{<u>**Pre-Trained MDM.**</u> While the generalist MDM can generate motion from text, it lacks domain-specific guidance, leading to frequent **artifacts**. Most noticeably, *'side kicks'* are often **truncated** mid-animation, substituted with front kicks, or some other form of **caothic kicking** motion. Action *'stretch on self'* instead **exhibits excessive, sometimes erratic variety**, diverging from target kinematic distribution.}
+[MEDIA:40-41-42-43-44-45]{<u>**KineMIC.**</u> Generated samples stay **more faithful** to high level kinematics of the few-shot target set. By localizing variety to the necessary motion windows, KineMIC produces **more stable and representative samples**—a critical factor for training reliable HAR classifiers.}
+[/MEDIA-SIDE-BY-SIDE]
 
 ## 💜 Cite us
 
