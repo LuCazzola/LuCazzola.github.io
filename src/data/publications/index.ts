@@ -17,7 +17,9 @@ export type Publication = {
   arxiv?: string;
   code?: string;
   image?: string;
-  media?: Array<{ type: "image" | "video" | "embed"; src: string; caption?: string }>;
+  media?: Array<{ type: "image" | "video" | "embed"; src: string; caption?: string; title?: string; audio?: boolean }>;
+  /** 1-based index into `media` to show as a standalone teaser between the buttons and abstract */
+  teaserIndex?: number;
   supplementary?: string;
   tags?: string[];
   abstract?: string;

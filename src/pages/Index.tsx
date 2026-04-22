@@ -31,35 +31,6 @@ const Index = () => {
       
   <HeroSection />
 
-      {/* Experience Section */}
-      <section id="experience" className="py-16 bg-background">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center gap-3 mb-12">
-            <Briefcase className="h-8 w-8 text-primary" />
-            <h2 className="font-serif text-3xl md:text-4xl text-primary">
-              Working experience
-            </h2>
-          </div>
-          
-          <div className="space-y-8 max-w-6xl mx-auto">
-            {experiences.map((experience, index) => (
-              <div key={experience.id ?? index} className="animate-fade-in" style={{ animationDelay: `${index * 0.1}s` }}>
-                <ExperienceCard
-                  company={experience.company}
-                  role={experience.role}
-                  location={experience.location ?? ''}
-                  period={experience.period ?? ''}
-                  description={experience.description}
-                  tags={experience.tags ?? []}
-                  companyImage={experience.companyImage ?? ''}
-                  logoImage={experience.logoImage}
-                />
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* Publications Section */}
       <section id="publications" className="py-16 bg-background">
         <div className="container mx-auto px-4">
@@ -102,24 +73,16 @@ const Index = () => {
 
                       {p.affiliations && <div className="text-sm text-muted-foreground mt-1">{p.affiliations}</div>}
 
-                      <div className="text-sm text-muted-foreground mt-1">
+                      <div className="text-sm font-bold mt-1">
                         {p.venue && p.venue !== '?' ? (
-                          <>— {p.venue}, {p.year ?? ''}</>
+                          <>→ {p.venue}, {p.year ?? ''}</>
                         ) : (
                           <>{p.year ?? ''}</>
                         )}
                       </div>
 
-                      {/* Abstract shown on the landing card below venue/year */}
-                      {p.abstract && (
-                        <>
-                          <hr className="border-t border-sky-100 my-3" />
-                          <p className="mt-2 text-sm text-muted-foreground">{p.abstract}</p>
-                        </>
-                      )}
-
                       {p.tags && (
-                        <div className="mt-2 flex flex-wrap gap-2">
+                        <div className="mt-4 flex flex-wrap gap-2">
                           {p.tags.map((t: string) => (
                             <Badge key={t} variant="secondary" className="text-xs">{t}</Badge>
                           ))}
@@ -127,9 +90,9 @@ const Index = () => {
                       )}
                     </div>
 
-                    <div className="md:col-span-2 flex items-stretch">
+                    <div className="md:col-span-2 flex items-center justify-center">
                       {p.image && (
-                        <img src={p.image} alt={p.title} className="w-full h-full object-cover rounded-md shadow-sm" />
+                        <img src={p.image} alt={p.title} className="max-w-full max-h-48 object-contain rounded-md shadow-sm" />
                       )}
                     </div>
                   </CardContent>
@@ -198,6 +161,35 @@ const Index = () => {
               </Button>
             </div>
           )}
+        </div>
+      </section>
+
+      {/* Experience Section */}
+      <section id="experience" className="py-16 bg-background">
+        <div className="container mx-auto px-4">
+          <div className="flex items-center gap-3 mb-12">
+            <Briefcase className="h-8 w-8 text-primary" />
+            <h2 className="font-serif text-3xl md:text-4xl text-primary">
+              Working experience
+            </h2>
+          </div>
+
+          <div className="space-y-8 max-w-6xl mx-auto">
+            {experiences.map((experience, index) => (
+              <div key={experience.id ?? index} className="animate-fade-in" style={{ animationDelay: `${index * 0.1}s` }}>
+                <ExperienceCard
+                  company={experience.company}
+                  role={experience.role}
+                  location={experience.location ?? ''}
+                  period={experience.period ?? ''}
+                  description={experience.description}
+                  tags={experience.tags ?? []}
+                  companyImage={experience.companyImage ?? ''}
+                  logoImage={experience.logoImage}
+                />
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 

@@ -18,7 +18,7 @@ const PSEUDOCODE_JS = "https://cdn.jsdelivr.net/npm/pseudocode@latest/build/pseu
 type MediaItem =
   | { type: "image"; src: string; caption?: string; alt?: string; poster?: string; title?: string }
   | { type: "gif"; src: string; caption?: string; alt?: string; title?: string }
-  | { type: "video"; src: string; poster?: string; caption?: string; title?: string }
+  | { type: "video"; src: string; poster?: string; caption?: string; title?: string; audio?: boolean }
   | { type: "embed"; src: string; caption?: string; title?: string };
 
 interface RenderOptions {
@@ -223,7 +223,7 @@ export default function RenderAsMarkdown(content: string, media?: MediaItem[], o
           <figure key={key} className="w-full">
             <Title>{m.title}</Title>
             <div>
-              <video controls loop autoPlay muted playsInline poster={resolve(String(m.poster ?? ""))} className="w-full rounded-lg" style={{ background: "transparent" }}>
+              <video controls loop {...(!m.audio ? { autoPlay: true, muted: true } : {})} playsInline poster={resolve(String(m.poster ?? ""))} className="w-full rounded-lg" style={{ background: "transparent" }}>
                 {buildVideoSources(String(m.src)).map((src, idx) => (
                   <source key={idx} src={resolve(src)} {...(mimeFor(src) ? { type: mimeFor(src) } : {})} />
                 ))}

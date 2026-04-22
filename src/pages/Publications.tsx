@@ -45,24 +45,24 @@ const Publications = () => {
                           ))}
                         </span>
                         {p.affiliations && <div className="text-sm text-muted-foreground mt-1">{p.affiliations}</div>}
-                        <span className="block text-sm text-muted-foreground mt-1">
+                        <span className="block text-sm font-bold mt-1">
                           {p.venue && p.venue !== '?' ? (
-                            <>— {p.venue}, {p.year ?? ''}</>
+                            <>→ {p.venue}, {p.year ?? ''}</>
                           ) : (
                             <>{p.year ?? ''}</>
                           )}
                         </span>
                       </p>
                       {p.abstract && <p className="mt-2 text-sm text-muted-foreground">{p.abstract}</p>}
-                    <div className="mt-3 flex flex-wrap gap-2">
+                    <div className="mt-4 flex flex-wrap gap-2">
                       {(p.tags || []).map((t) => (
                         <Badge key={t} variant="secondary" className="text-xs">{t}</Badge>
                       ))}
                     </div>
                   </div>
-                  <div className="md:col-span-2 flex items-stretch">
+                  <div className="md:col-span-2 flex items-center justify-center">
                     {p.image && (
-                      <img src={p.image} alt={p.title} className="w-full h-full object-cover rounded-md shadow-sm" />
+                      <img src={p.image} alt={p.title} className="max-w-full max-h-48 object-contain rounded-md shadow-sm" />
                     )}
                   </div>
                 </CardContent>

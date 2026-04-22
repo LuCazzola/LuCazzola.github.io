@@ -248,8 +248,8 @@ const PublicationDetail = () => {
             </div>
           </header>
 
-          {/* Main media below the buttons */}
-          {(pub.image || hasMedia) && (
+          {/* Main media below the buttons — skip when content.md handles layout or teaserIndex is set */}
+          {(pub.image && !pub.teaserIndex || (hasMedia && !pub.content && !pub.teaserIndex)) && (
             <div style={{ marginTop: 56 }}>
               {pub.image ? (
                 // Prefer the dedicated `image` field as the main media
@@ -336,6 +336,26 @@ const PublicationDetail = () => {
               )}
             </div>
           )}
+
+          {/* Teaser — shown between buttons and abstract when teaserIndex is set */}
+          {pub.teaserIndex && hasMedia && (() => {
+            const t = media[pub.teaserIndex! - 1];
+            if (!t) return null;
+            return (
+              <div style={{ marginTop: 40 }}>
+                {t.type === "video" ? (
+                  <video controls loop autoPlay muted playsInline style={{ width: "100%", background: "transparent", borderRadius: 8 }}>
+                    {buildVideoSources(t.src).map((src: string, idx: number) => (
+                      <source key={idx} src={src} {...(mimeFor(src) ? { type: mimeFor(src) } : {})} />
+                    ))}
+                  </video>
+                ) : t.type === "image" ? (
+                  <img src={t.src} alt={pub.title} style={{ width: "100%", objectFit: "cover", borderRadius: 8 }} />
+                ) : null}
+                {t.caption && <div style={{ marginTop: 8, color: "#555", fontSize: 13, textAlign: "center" }}>{t.caption}</div>}
+              </div>
+            );
+          })()}
 
           {/* Abstract */}
           {pub.abstract && (
