@@ -1,0 +1,203 @@
+import React, { useState, useEffect } from "react";
+import { FileText, ExternalLink, Code, Download } from "lucide-react";
+import type { Publication, MediaItem } from "@/_internal/types";
+import RenderAsMarkdown from "@/_internal/lib/RenderAsMarkdown";
+import MediaCarousel from "@/_internal/components/MediaCarousel";
+import ThreeBallSeparator from "@/_internal/components/ThreeBallSeparator";
+
+// ─── small helpers ────────────────────────────────────────────────────────────
+
+const mimeFor = (src?: string) => { const e = src?.split("?")[0].split(".").pop()?.toLowerCase(); return e === "mp4" ? "video/mp4" : e === "webm" ? "video/webm" : e === "ogv" || e === "ogg" ? "video/ogg" : undefined; };
+const videoSources = (s?: string) => { if (!s) return [] as string[]; const [p, q] = s.split("?"); const e = p.split(".").pop()?.toLowerCase() ?? ""; const b = p.replace(/\.[^.]+$/, ""); const qs = q ? `?${q}` : ""; const c = [s]; if (e === "mp4") c.push(`${b}.webm${qs}`); else if (e === "webm") c.push(`${b}.mp4${qs}`); else { c.push(`${b}.mp4${qs}`); c.push(`${b}.webm${qs}`); } return [...new Set(c)]; };
+
+const Tooltip: React.FC<{ text: string; children: React.ReactNode }> = ({ text, children }) => {
+  const [show, setShow] = useState(false);
+  return (
+    <span style={{ position: "relative", display: "inline-block" }}
+      onMouseEnter={() => setShow(true)} onMouseLeave={() => setShow(false)}
+      onFocus={() => setShow(true)} onBlur={() => setShow(false)}>
+      {children}
+      {show && <span role="tooltip" style={{ position: "absolute", top: -36, left: "50%", transform: "translateX(-50%)", background: "#111", color: "#fff", padding: "6px 8px", borderRadius: 6, fontSize: 12, whiteSpace: "nowrap", zIndex: 1000 }}>{text}</span>}
+    </span>
+  );
+};
+
+const VideoEl: React.FC<{ src: string }> = ({ src }) => (
+  <video controls loop autoPlay muted playsInline style={{ width: "100%", borderRadius: 8, background: "transparent" }}>
+    {videoSources(src).map((s, i) => <source key={i} src={s} {...(mimeFor(s) ? { type: mimeFor(s) } : {})} />)}
+  </video>
+);
+
+// ─── button styles ────────────────────────────────────────────────────────────
+
+const btn: React.CSSProperties = { display: "inline-flex", alignItems: "center", gap: 8, borderRadius: 6, padding: "8px 12px", fontSize: 14, fontWeight: 500, textDecoration: "none", border: "none", cursor: "pointer" };
+const btnRed   = { ...btn, background: "#c0392b", color: "#fff" } as React.CSSProperties;
+const btnBlue  = { ...btn, background: "#0b69ff", color: "#fff" } as React.CSSProperties;
+const btnBlack = { ...btn, background: "#111",    color: "#fff" } as React.CSSProperties;
+const btnOff   = { ...btn, background: "transparent", color: "#999", border: "1px solid #ddd", opacity: 0.6, cursor: "not-allowed" } as React.CSSProperties;
+
+// ─── component ────────────────────────────────────────────────────────────────
+
+const PublicationPage: React.FC<{ pub: Publication }> = ({ pub }) => {
+  const [mediaIndex, setMediaIndex] = useState(0);
+
+  useEffect(() => { try { window.scrollTo({ top: 0, left: 0 }); } catch {} }, []);
+
+  const media: MediaItem[] = Array.isArray(pub.media) ? pub.media : [];
+  const hasMedia = media.length > 0;
+
+  // Show main media block when there's no content.md layout and no teaserIndex
+  const showMain = (!!pub.image || hasMedia) && !pub.content && !pub.teaserIndex;
+
+  const th = pub.theme ?? {};
+  const accent = th.accentColor ?? "#0a4b7c";
+
+  // Inject theme as CSS variables so index.css / Tailwind prose also picks them up
+  useEffect(() => {
+    const root = document.documentElement;
+    root.style.setProperty("--md-accent", accent);
+    if (th.baseFontSize)   root.style.fontSize = `${th.baseFontSize}px`;
+    if (th.bodyFont)       root.style.setProperty("font-family", th.bodyFont);
+    if (th.headingFont)    root.style.setProperty("--md-heading-font", th.headingFont);
+    if (th.pageBackground) root.style.background = th.pageBackground;
+    return () => {
+      root.style.removeProperty("--md-accent");
+      root.style.removeProperty("font-size");
+      root.style.removeProperty("--md-heading-font");
+      root.style.removeProperty("font-family");
+      root.style.removeProperty("background");
+    };
+  }, [accent, th.baseFontSize, th.bodyFont, th.headingFont, th.pageBackground]);
+
+  const pageBg  = th.pageBackground  ?? "#fff";
+  const blockBg = th.blockBackground ?? "#f7f7f7";
+  const maxW    = th.contentMaxWidth  ?? 1200;
+
+  return (
+    <div style={{ background: pageBg, color: "#111", minHeight: "100vh" }}>
+
+      {/* ── top bar ────────────────────────────────────────────────────────── */}
+      <div style={{ borderBottom: "1px solid #e6e6e6" }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto", padding: "10px 28px", display: "flex", justifyContent: "space-between", fontSize: 13, color: "#666" }}>
+          <a href={pub.siteUrl ?? "/"} style={{ color: "#666", textDecoration: "none" }}>← Back to site</a>
+          <div>{pub.venue && pub.venue !== "?" ? <>{pub.venue} • {pub.year}</> : pub.year}</div>
+        </div>
+      </div>
+
+      <main style={{ paddingTop: 28, paddingBottom: 60 }}>
+        <div style={{ maxWidth: maxW, margin: "0 auto", padding: "0 28px" }}>
+
+          {/* ── header ───────────────────────────────────────────────────────── */}
+          <header style={{ textAlign: "center" }}>
+            <h1 style={{ fontSize: `clamp(28px, 5vw, ${th.titleFontSize ?? 48}px)`, lineHeight: 1.05, margin: 0, color: accent, fontFamily: th.headingFont }}>{pub.title}</h1>
+
+            <div style={{ marginTop: 12, fontSize: th.authorFontSize ?? 18, fontWeight: 700, display: "flex", justifyContent: "center", gap: 8, flexWrap: "wrap" }}>
+              {pub.authors.map(([name, url], i) => (
+                <span key={i}>
+                  {url ? <a href={url} target="_blank" rel="noopener noreferrer" style={{ color: "inherit", textDecoration: "underline" }}>{name}</a> : name}
+                  {i < pub.authors.length - 1 && <span style={{ color: "#666" }}>, </span>}
+                </span>
+              ))}
+            </div>
+
+            {pub.affiliations && <div style={{ marginTop: 8, color: "#666", fontSize: 16 }}>{pub.affiliations}</div>}
+            <div style={{ marginTop: 8, color: "#666", fontSize: 14 }}>
+              {pub.venue && pub.venue !== "?" ? <>{pub.venue} • {pub.year}</> : pub.year}
+            </div>
+
+            {/* buttons */}
+            <div style={{ marginTop: 16, display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
+              {pub.pdf
+                ? <a href={pub.pdf} download style={btnBlue}><FileText size={16} /><span>Paper (PDF)</span></a>
+                : null}
+
+              {pub.paper
+                ? <a href={pub.paper} target="_blank" rel="noreferrer" style={btnRed}><ExternalLink size={16} /><span>Paper</span></a>
+                : <Tooltip text="Coming soon"><button disabled style={btnOff}><ExternalLink size={16} /><span>Paper</span></button></Tooltip>}
+
+              {pub.code
+                ? <a href={pub.code} target="_blank" rel="noreferrer" style={btnBlack}><Code size={16} /><span>Code</span></a>
+                : <Tooltip text="Coming soon"><button disabled style={btnOff}><Code size={16} /><span>Code</span></button></Tooltip>}
+
+              {pub.supplementary
+                ? <a href={pub.supplementary} download style={btnBlue}><Download size={16} /><span>Supplementary</span></a>
+                : <Tooltip text="No supplementary material"><button disabled style={btnOff}><Download size={16} /><span>Supplementary</span></button></Tooltip>}
+            </div>
+          </header>
+
+          {/* ── main media (only when no content.md) ─────────────────────────── */}
+          {showMain && (
+            <div style={{ marginTop: 56 }}>
+              {pub.image ? (
+                <img src={pub.image} alt={pub.title} style={{ width: "100%", objectFit: "cover", borderRadius: 8 }} />
+              ) : media.length === 1 ? (
+                media[0].type === "image" ? <img src={media[0].src} alt={pub.title} style={{ width: "100%", borderRadius: 8 }} />
+                  : media[0].type === "video" ? <VideoEl src={media[0].src} />
+                  : <iframe src={media[0].src} title={pub.title} style={{ width: "100%", height: 480, border: 0, borderRadius: 8 }} allowFullScreen />
+              ) : (
+                <>
+                  <div style={{ borderRadius: 8, overflow: "hidden" }}>
+                    {media[mediaIndex].type === "image" && <img src={media[mediaIndex].src} alt={pub.title} style={{ width: "100%" }} />}
+                    {media[mediaIndex].type === "video" && <VideoEl src={media[mediaIndex].src} />}
+                    {media[mediaIndex].type === "embed" && <iframe src={media[mediaIndex].src} title={pub.title} style={{ width: "100%", height: 480, border: 0 }} allowFullScreen />}
+                  </div>
+                  <div style={{ display: "flex", justifyContent: "center", gap: 8, marginTop: 8 }}>
+                    <button onClick={() => setMediaIndex((n) => (n - 1 + media.length) % media.length)}>Prev</button>
+                    {media.map((_, idx) => (
+                      <button key={idx} onClick={() => setMediaIndex(idx)}
+                        style={{ width: 10, height: 10, borderRadius: "50%", background: idx === mediaIndex ? "#111" : "#ccc", border: "none", padding: 0, cursor: "pointer" }} />
+                    ))}
+                    <button onClick={() => setMediaIndex((n) => (n + 1) % media.length)}>Next</button>
+                  </div>
+                  {media[mediaIndex]?.caption && <div style={{ marginTop: 8, color: "#555", fontSize: 13 }}>{media[mediaIndex].caption}</div>}
+                </>
+              )}
+            </div>
+          )}
+
+          {/* ── teaser (when teaserIndex is set) ─────────────────────────────── */}
+          {pub.teaserIndex && hasMedia && (() => {
+            const teaser = media[pub.teaserIndex! - 1];
+            if (!teaser) return null;
+            return (
+              <div style={{ marginTop: 40 }}>
+                {teaser.type === "video" ? <VideoEl src={teaser.src} /> : teaser.type === "image" ? <img src={teaser.src} alt={pub.title} style={{ width: "100%", borderRadius: 8 }} /> : null}
+                {teaser.caption && <div style={{ marginTop: 8, color: "#555", fontSize: 13, textAlign: "center" }}>{teaser.caption}</div>}
+              </div>
+            );
+          })()}
+
+          {/* ── abstract ─────────────────────────────────────────────────────── */}
+          {pub.abstract && (
+            <section style={{ background: blockBg, padding: 20, borderRadius: 8, marginTop: 20 }}>
+              <h2 style={{ marginTop: 0, fontSize: th.headingFontSize ?? 22, color: accent, fontFamily: th.headingFont }}>Abstract</h2>
+              <p style={{ marginBottom: 0, fontSize: th.abstractFontSize ?? 16 }}>{pub.abstract}</p>
+            </section>
+          )}
+
+          {/* ── markdown content ──────────────────────────────────────────────── */}
+          {pub.content && (
+            <>
+              <ThreeBallSeparator />
+              <section style={{ marginBottom: 48, fontSize: th.contentFontSize ?? 16 }}>
+                {RenderAsMarkdown(pub.content, media, { math: true })}
+              </section>
+            </>
+          )}
+
+        </div>
+      </main>
+
+      {/* ── footer ───────────────────────────────────────────────────────── */}
+      <footer style={{ borderTop: "1px solid #e6e6e6", padding: "20px 28px", textAlign: "center", fontSize: 13, color: "#999" }}>
+        © {new Date().getFullYear()} Luca Cazzola. All rights reserved.
+        {" · "}
+        <a href="https://github.com/LuCazzola/md-paper" target="_blank" rel="noopener noreferrer" style={{ color: "#999", textDecoration: "underline" }}>
+          md-paper template
+        </a>
+      </footer>
+    </div>
+  );
+};
+
+export default PublicationPage;
