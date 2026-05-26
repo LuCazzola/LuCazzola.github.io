@@ -50,7 +50,7 @@ const Publications = () => {
                         {p.affiliations && <div className="text-sm text-muted-foreground mt-1">{p.affiliations}</div>}
                         <span className="block text-sm font-bold mt-1">
                           {p.venue && p.venue !== '?' ? (
-                            <>→ {p.venue}, {p.year ?? ''}</>
+                            <>→ {p.venue} • {p.year ?? ''}</>
                           ) : (
                             <>{p.year ?? ''}</>
                           )}

@@ -79,7 +79,7 @@ const Index = () => {
 
                       <div className="text-sm font-bold mt-1">
                         {p.venue && p.venue !== '?' ? (
-                          <>→ {p.venue}, {p.year ?? ''}</>
+                          <>→ {p.venue} • {p.year ?? ''}</>
                         ) : (
                           <>{p.year ?? ''}</>
                         )}
