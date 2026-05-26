@@ -4,7 +4,6 @@ import Footer from "@/components/Footer";
 import { getPublications } from "@/data/publications";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Link } from "react-router-dom";
 
 const Publications = () => {
   const pubs = getPublications();
@@ -24,9 +23,13 @@ const Publications = () => {
                 <CardContent className="p-4 md:p-6 grid md:grid-cols-5 gap-4 items-center">
                   <div className="md:col-span-3">
                       <h3 className="font-semibold text-lg">
-                        <Link to={`/publications/${p.id}`} className="hover:underline">
-                          {p.title}
-                        </Link>
+                        {p.pageUrl ? (
+                          <a href={p.pageUrl} target="_blank" rel="noopener noreferrer" className="hover:underline">
+                            {p.title}
+                          </a>
+                        ) : (
+                          <span>{p.title}</span>
+                        )}
                       </h3>
                       <p className="text-sm text-muted-foreground">
                         {/* Authors: array of [name, link?] */}

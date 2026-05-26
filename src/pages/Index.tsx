@@ -46,9 +46,13 @@ const Index = () => {
                   <CardContent className="p-4 grid md:grid-cols-5 gap-4 items-center">
                     <div className="md:col-span-3">
                       <h3 className="font-semibold text-lg">
-                        <Link to={`/publications/${p.id}`} className="hover:underline">
-                          {p.title}
-                        </Link>
+                        {p.pageUrl ? (
+                          <a href={p.pageUrl} target="_blank" rel="noopener noreferrer" className="hover:underline">
+                            {p.title}
+                          </a>
+                        ) : (
+                          <span>{p.title}</span>
+                        )}
                       </h3>
 
                       {/* Authors: render array of [name, link?] with larger font */}
