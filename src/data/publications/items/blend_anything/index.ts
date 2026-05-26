@@ -2,6 +2,7 @@ import type { Publication } from "@/data/publications";
 import { asset } from "@/lib/asset";
 
 const publication: Publication = {
+  order: 1,
   title: "BlendAnything: A Blender Plugin for Cross-Topology Motion Blending",
   authors: [
     ["L. Cazzola",    "https://scholar.google.com/citations?user=fsnsqoYAAAAJ&hl=en"],

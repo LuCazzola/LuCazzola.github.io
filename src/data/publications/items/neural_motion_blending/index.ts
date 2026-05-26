@@ -2,6 +2,7 @@ import type { Publication } from "@/data/publications";
 import { asset } from "@/lib/asset";
 
 const publication: Publication = {
+  order: 2,
   title: "Neural Motion Blending Across Arbitrary Character Topologies",
   authors: [
     ["L. Cazzola",    "https://scholar.google.com/citations?user=fsnsqoYAAAAJ&hl=en"],

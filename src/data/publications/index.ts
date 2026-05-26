@@ -1,5 +1,7 @@
 export type Publication = {
   id?: string;
+  /** Display order — lower numbers appear first */
+  order?: number;
   title: string;
   authors: Array<[string, string?]>;
   affiliations?: string;
@@ -24,7 +26,8 @@ const publications: Publication[] = Object.entries(modules)
     if (match) p.id = p.id ?? match[1];
     return p;
   })
-  .filter(Boolean) as Publication[];
+  .filter(Boolean)
+  .sort((a, b) => (a.order ?? 999) - (b.order ?? 999)) as Publication[];
 
 export function getPublications() {
   return publications;
