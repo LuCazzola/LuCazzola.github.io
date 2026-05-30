@@ -15,7 +15,7 @@ const publication: Publication = {
   image: asset("/media/ba/teaser.png"),
   tags: ["Blender Plugin", "Motion Blending", "Cross-Topology", "Character Animation", "NLA Editor"],
   abstract: "A Blender plugin that brings neural cross-topology motion blending directly into the artist's workflow, enabling seamless motion interpolation between characters with heterogeneous skeletal rigs via an intuitive NLA editor interface.",
-  pageUrl: "https://lucazzola.github.io/blend_anything-page/",
+  pageUrl: "https://mmlab-cv.github.io/BlendAnything/",
 };
 
 export default publication;

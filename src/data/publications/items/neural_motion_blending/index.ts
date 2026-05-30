@@ -15,7 +15,7 @@ const publication: Publication = {
   image: asset("/media/nmb/teaser_thumb.jpg"),
   tags: ["Motion Blending", "Character Animation", "Cross-Topology", "Diffusion Model", "Latent Space"],
   abstract: "A novel framework for blending motions across characters with heterogeneous skeletal topologies, combining a semantic encoder with a diffusion-based decoder to interpolate in a shared latent space — no manual rig correspondence required.",
-  pageUrl: "https://lucazzola.github.io/neural_motion_blending-page/",
+  pageUrl: "https://mmlab-cv.github.io/neural_motion_blending/",
 };
 
 export default publication;
