@@ -7,7 +7,8 @@ export type Publication = {
   affiliations?: string;
   venue?: string;
   year?: string;
-  arxiv?: string;
+  /** Link to the paper itself (arXiv, ACM DL, publisher page, ...) */
+  paper?: string;
   code?: string;
   image?: string;
   tags?: string[];

@@ -20,6 +20,7 @@ export default {
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
+        heading: "hsl(var(--heading))",
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
@@ -113,11 +114,6 @@ export default {
       fontFamily: {
         'sans': ['Lato', 'sans-serif'],
         'serif': ['Patua One', 'serif'],
-      },
-      maxWidth: {
-        // Make the 6xl main content width wider (default 72rem). We increase it
-        // so components using `max-w-6xl` have a larger readable column.
-        '6xl': '88rem',
       },
     },
   },

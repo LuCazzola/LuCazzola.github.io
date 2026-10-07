@@ -256,7 +256,7 @@ export default function RenderAsMarkdown(content: string, media?: MediaItem[], o
           // Side-by-side layout with responsive fallback to column
           const rawScale = typeof (p as any).scale === "number" && !Number.isNaN((p as any).scale) ? (p as any).scale : 1;
           const scale = Math.max(0.05, rawScale); // Allow values > 1.0
-          const innerMax = Math.round(1200 * scale); // Scales up if > 1.0, but will fit in viewport if smaller
+          const innerMax = `${Math.round(Math.min(1, scale) * 100)}%`;
           const items = (p as any).items;
           const containerId = `sidebyside-${i}`;
           
@@ -321,9 +321,6 @@ export default function RenderAsMarkdown(content: string, media?: MediaItem[], o
                   #${containerId} .sidebyside-media {
                     margin-top: 0.75rem;
                   }
-                  #${containerId} .sidebyside-inner {
-                    padding: 0 1rem;
-                  }
                 }
                 #${containerId} .sidebyside-container {
                   min-width: 0;
@@ -358,27 +355,16 @@ export default function RenderAsMarkdown(content: string, media?: MediaItem[], o
               <div
                 key={i}
                 id={containerId}
-                style={{
-                  marginTop: 12,
-                  background: "#fff",
-                  padding: 12,
-                  borderRadius: 8,
-                  width: "100vw",
-                  position: "relative",
-                  left: "50%",
-                  right: "50%",
-                  marginLeft: "-50vw",
-                  marginRight: "-50vw",
-                }}
+                className="mt-3 rounded-lg bg-card border border-border p-3"
               >
-                <div className="sidebyside-inner" style={{ maxWidth: innerMax, margin: "0 auto", width: "100%", boxSizing: "border-box" }}>
+                <div className="sidebyside-inner mx-auto w-full sm:max-w-[var(--media-max)]" style={{ "--media-max": innerMax } as React.CSSProperties}>
                   {/* Each item contains its own caption + media, with flex layout for alignment */}
                   <div className="sidebyside-grid" style={{ display: "grid", gridTemplateColumns: `repeat(${items.length}, 1fr)`, alignItems: "end" }}>
                     {items.map((itemInfo, idx) => (
                       <div key={idx} className="sidebyside-container">
                         <div className="sidebyside-caption">
                           {itemInfo.caption && (
-                            <div className="markdown-body prose prose-lg max-w-none">
+                            <div className="markdown-body prose prose-sm md:prose-base max-w-none">
                               <ReactMarkdown
                                 remarkPlugins={[remarkGfm, ...(options?.math ? [remarkMath] : [])]}
                                 rehypePlugins={[...(options?.math ? [(rehypeKatex as any), (rehypeRaw as any)] : [])]}
@@ -405,21 +391,10 @@ export default function RenderAsMarkdown(content: string, media?: MediaItem[], o
           return (
             <div
               key={i}
-              style={{
-                marginTop: 12,
-                background: "#f7f7f7",
-                padding: 20,
-                borderRadius: 8,
-                width: "100vw",
-                position: "relative",
-                left: "50%",
-                right: "50%",
-                marginLeft: "-50vw",
-                marginRight: "-50vw",
-              }}
+              className="mt-3 rounded-lg bg-secondary/40 p-4 md:p-5"
             >
-              <div style={{ maxWidth: 1200, margin: "0 auto" }}>
-                <div className="markdown-body prose prose-lg max-w-none">
+              <div >
+                <div className="markdown-body prose prose-sm md:prose-base max-w-none">
                   <ReactMarkdown
                     remarkPlugins={[remarkGfm, ...(options?.math ? [remarkMath] : [])]}
                     // when using rehype-katex it may emit raw HTML nodes; include rehypeRaw so they are parsed
@@ -452,30 +427,19 @@ export default function RenderAsMarkdown(content: string, media?: MediaItem[], o
             );
           }
           const scale = typeof p.scale === "number" && !Number.isNaN(p.scale) ? Math.max(0.05, Math.min(1, p.scale)) : 1;
-          const innerMax = Math.round(1200 * scale);
+          const innerMax = `${Math.round(scale * 100)}%`;
           
           if (items.length === 1) {
             return (
               // full-bleed white background that spans the viewport width
               <div
                 key={i}
-                style={{
-                  marginTop: 12,
-                  background: "#fff",
-                  padding: 12,
-                  borderRadius: 8,
-                  width: "100vw",
-                  position: "relative",
-                  left: "50%",
-                  right: "50%",
-                  marginLeft: "-50vw",
-                  marginRight: "-50vw",
-                }}
+                className="mt-3 rounded-lg bg-card border border-border p-3"
               >
-                <div style={{ maxWidth: innerMax, margin: "0 auto" }}>
+                <div className="mx-auto w-full sm:max-w-[var(--media-max)]" style={{ "--media-max": innerMax } as React.CSSProperties}>
                   {(p as any).captionBlock && (
                     <>
-                      <div className="markdown-body prose prose-lg max-w-none" style={{ marginBottom: 8 }}>
+                      <div className="markdown-body prose prose-sm md:prose-base max-w-none" style={{ marginBottom: 8 }}>
                         <ReactMarkdown
                           remarkPlugins={[remarkGfm, ...(options?.math ? [remarkMath] : [])]}
                           rehypePlugins={[...(options?.math ? [(rehypeKatex as any), (rehypeRaw as any)] : [])]}
@@ -505,23 +469,12 @@ export default function RenderAsMarkdown(content: string, media?: MediaItem[], o
           return (
             <div
               key={i}
-              style={{
-                marginTop: 16,
-                background: "#fff",
-                padding: 12,
-                borderRadius: 8,
-                width: "100vw",
-                position: "relative",
-                left: "50%",
-                right: "50%",
-                marginLeft: "-50vw",
-                marginRight: "-50vw",
-              }}
+              className="mt-3 rounded-lg bg-card border border-border p-3"
             >
-              <div style={{ maxWidth: innerMax, margin: "0 auto" }}>
+              <div className="mx-auto w-full sm:max-w-[var(--media-max)]" style={{ "--media-max": innerMax } as React.CSSProperties}>
                 {(p as any).captionBlock && (
                   <>
-                    <div className="markdown-body prose prose-lg max-w-none" style={{ marginBottom: 8 }}>
+                    <div className="markdown-body prose prose-sm md:prose-base max-w-none" style={{ marginBottom: 8 }}>
                       <ReactMarkdown
                         remarkPlugins={[remarkGfm, ...(options?.math ? [remarkMath] : [])]}
                         rehypePlugins={[...(options?.math ? [(rehypeKatex as any), (rehypeRaw as any)] : [])]}
@@ -543,20 +496,9 @@ export default function RenderAsMarkdown(content: string, media?: MediaItem[], o
           return (
             <div
               key={i}
-              style={{
-                marginTop: 12,
-                background: "#fff",
-                padding: 12,
-                borderRadius: 8,
-                width: "100vw",
-                position: "relative",
-                left: "50%",
-                right: "50%",
-                marginLeft: "-50vw",
-                marginRight: "-50vw",
-              }}
+              className="mt-3 rounded-lg bg-card border border-border p-3"
             >
-              <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+              <div >
                 <figure className="w-full">
                   <img src={asset("/media/placeholder.svg")} alt="placeholder" loading="lazy" className="w-full rounded-lg object-cover" />
                   <figcaption className="text-sm text-muted-foreground mt-2">Placeholder media</figcaption>

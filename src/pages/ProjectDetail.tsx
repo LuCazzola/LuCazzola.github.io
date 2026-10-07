@@ -13,10 +13,6 @@ const ProjectDetail = () => {
   const { id } = useParams<{ id: string }>();
   const project = id ? getProjectById(id) : null;
 
-  if (!project) {
-    return <Navigate to="/projects" replace />;
-  }
-
   // local state to manage open menus on small screens
   const [codeMenuOpen, setCodeMenuOpen] = useState(false);
   const [reportMenuOpen, setReportMenuOpen] = useState(false);
@@ -38,6 +34,10 @@ const ProjectDetail = () => {
       document.removeEventListener("touchstart", handler);
     };
   }, []);
+
+  if (!project) {
+    return <Navigate to="/projects" replace />;
+  }
 
   // Use unified markdown + media renderer
   // NOTE: RenderAsMarkdown will enable math support; pass project.media as the media array
@@ -66,22 +66,22 @@ const ProjectDetail = () => {
     <div className="min-h-screen bg-background flex flex-col">
       <Navbar />
       
-      <div className="pt-24 pb-16 flex-1">
-  <div className="container mx-auto px-4 max-w-6xl">
+      <div className="pt-20 pb-16 flex-1 md:pt-24">
+  <div className="mx-auto w-full max-w-[60rem] px-4 sm:px-6">
     {/* main content column: constrain main text to a consistent readable width */}
-    <div className="mx-auto max-w-5xl">
+    <div>
     <div className="mb-8">
-            <h1 className="font-serif text-4xl md:text-5xl text-primary mb-4">
+            <h1 className="font-serif text-3xl md:text-4xl text-heading mb-3">
               {project.title}
             </h1>
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-base md:text-lg text-muted-foreground mb-4">
               {project.description}
             </p>
             <div>
               <div className="mt-2">
                 <div className="flex flex-wrap gap-2">
                   {project.tags.map((tag) => (
-                    <Badge key={tag} variant="secondary" className="bg-accent text-accent-foreground">
+                    <Badge key={tag} variant="secondary" className="bg-accent text-accent-foreground font-normal">
                       {tag}
                     </Badge>
                   ))}
@@ -94,14 +94,14 @@ const ProjectDetail = () => {
           <div className="mb-8">
       {/* overview box slightly narrower than the main column; reduce the gap to half of previous
         by using a custom max-width between 4xl and 5xl (60rem). */}
-      <div className="mx-auto max-w-[60rem]">
-              <div className="bg-sky-50 border border-sky-100 rounded-lg p-6">
-              <h2 className="text-sm font-semibold text-sky-700 mb-2">Project Overview</h2>
-              <hr className="border-t border-sky-100 mb-4" />
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div>
+              <div className="bg-secondary/60 border border-border rounded-lg p-4 md:p-6">
+              <h2 className="font-sans text-xs font-bold uppercase tracking-wide text-primary mb-2">Project Overview</h2>
+              <hr className="border-t border-border mb-4" />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 {/* Problems */}
                 <div>
-                  <h3 className="text-lg font-semibold text-primary mb-2">Problems</h3>
+                  <h3 className="text-base font-semibold text-heading mb-2">Problems</h3>
                   <div className="text-sm text-muted-foreground leading-relaxed">
                     {overview?.problems ? (
                       Array.isArray(overview.problems) ? (
@@ -125,7 +125,7 @@ const ProjectDetail = () => {
 
                 {/* Methods */}
                 <div>
-                  <h3 className="text-lg font-semibold text-primary mb-2">Methods</h3>
+                  <h3 className="text-base font-semibold text-heading mb-2">Methods</h3>
                   <div className="text-sm text-muted-foreground leading-relaxed">
                     {overview?.methods ? (
                       Array.isArray(overview.methods) ? (
@@ -149,7 +149,7 @@ const ProjectDetail = () => {
 
                 {/* Tools */}
                 <div>
-                  <h3 className="text-lg font-semibold text-primary mb-2">Tools</h3>
+                  <h3 className="text-base font-semibold text-heading mb-2">Tools</h3>
                   <div className="text-sm text-muted-foreground leading-relaxed">
                     {overview?.tools && overview.tools.length > 0 ? (
                       <ul className="list-disc pl-5 space-y-2">
@@ -165,7 +165,7 @@ const ProjectDetail = () => {
 
                 {/* Goals */}
                 <div>
-                  <h3 className="text-lg font-semibold text-primary mb-2">Goals</h3>
+                  <h3 className="text-base font-semibold text-heading mb-2">Goals</h3>
                   <div className="text-sm text-muted-foreground leading-relaxed">
                     {overview?.goal ? (
                       Array.isArray(overview.goal) ? (
@@ -189,7 +189,7 @@ const ProjectDetail = () => {
               </div>
               {/* collaborators / credit separator */}
               {project.collaborators && (
-                <div className="mt-6 pt-4 border-t border-sky-100 text-sm text-sky-700">
+                <div className="mt-6 pt-4 border-t border-border text-sm text-primary">
                   {Array.isArray(project.collaborators) ? (
                     `Developed in collaboration with ${project.collaborators.join(" & ")}${project.when ? ` (${formatWhen(project.when)})` : ""}`
                   ) : (
@@ -204,12 +204,12 @@ const ProjectDetail = () => {
 
           {/* resources placeholder - moved below Context */}
 
-          <div className="prose prose-lg mx-auto max-w-5xl">
+          <div className="max-w-none">
             {/* Context */}
             {/* Small Context section (compact) */}
             {overview?.context && (
               <section className="mb-8">
-                <h3 className="text-base font-semibold text-primary mb-2">Context</h3>
+                <h3 className="text-base font-semibold text-heading mb-2">Context</h3>
                 <p className="text-sm text-muted-foreground">{overview.context}</p>
               </section>
             )}
@@ -235,7 +235,7 @@ const ProjectDetail = () => {
                           <Button
                             asChild
                             size="sm"
-                            className="bg-black text-white border-black hover:bg-[#111] transform transition-transform duration-150 hover:scale-105 hover:shadow-lg inline-flex items-center gap-2 px-3 py-2"
+                            className="bg-primary text-primary-foreground hover:bg-primary-hover inline-flex items-center gap-2 px-3 py-2"
                           >
                             <a href={links[0].url} target="_blank" rel="noopener noreferrer">
                               {label}
@@ -256,7 +256,7 @@ const ProjectDetail = () => {
                             aria-haspopup="menu"
                             aria-expanded={open}
                             onClick={() => setOpen((s: boolean) => !s)}
-                            className="inline-flex items-center gap-2 px-3 py-2 bg-black text-white rounded-md border border-black w-full sm:w-auto justify-center"
+                            className="inline-flex items-center gap-2 px-3 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary-hover w-full sm:w-auto justify-center"
                           >
                             <span className="inline-flex items-center gap-2">
                               <span>{label}</span>

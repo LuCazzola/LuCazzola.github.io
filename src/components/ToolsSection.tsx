@@ -1,5 +1,5 @@
-import { Card, CardContent } from "@/components/ui/card";
-import { Code2, Wrench } from "lucide-react";
+import { Wrench } from "lucide-react";
+import Section from "@/components/Section";
 import { asset } from "@/lib/asset";
 
 const ToolsSection = () => {
@@ -22,70 +22,30 @@ const ToolsSection = () => {
     return map[name] ?? `${name.toLowerCase().replace(/[^a-z0-9]+/gi, "_")}.svg`;
   };
 
-  const ToolTag = ({ name }: { name: string }) => {
-    const file = getToolImage(name);
-    return (
-      <div
-        role="listitem"
-        className="flex items-center gap-3 px-4 py-2 bg-secondary rounded-lg hover:shadow-md transition-shadow cursor-default"
-      >
-        <img src={asset(`/media/tools/${file}`)} alt={`${name} logo`} className="w-6 h-6 md:w-7 md:h-7 object-contain" />
-        <span className="font-medium text-sm md:text-base">{name}</span>
-      </div>
-    );
-  };
+  const groups = [
+    { label: "Languages", items: programmingLanguages },
+    { label: "Frameworks", items: frameworks },
+    { label: "Other software", items: otherSoftware },
+  ];
 
   return (
-    <section className="py-16 bg-background">
-      <div className="container mx-auto px-4">
-        <div className="max-w-4xl mx-auto">
-          <div className="flex items-center gap-3 mb-12">
-            <Wrench className="h-8 w-8 text-primary" />
-            <h2 className="font-serif text-3xl md:text-4xl text-primary">
-              Tools I work with
-            </h2>
+    <Section id="tools" title="Tools I work with" icon={Wrench}>
+      <div className="divide-y divide-border border-t border-border">
+        {groups.map((group) => (
+          <div key={group.label} className="grid gap-2 py-3 sm:grid-cols-[9rem,1fr] sm:items-center">
+            <h3 className="font-sans text-xs font-bold uppercase tracking-wide text-muted-foreground">{group.label}</h3>
+            <ul className="flex flex-wrap gap-x-5 gap-y-2">
+              {group.items.map((name) => (
+                <li key={name} className="flex items-center gap-2">
+                  <img src={asset(`/media/tools/${getToolImage(name)}`)} alt="" className="h-5 w-5 object-contain" />
+                  <span className="text-sm font-semibold">{name}</span>
+                </li>
+              ))}
+            </ul>
           </div>
-          
-          <div className="space-y-8">
-            <Card className="border-border bg-card">
-              <CardContent className="p-6">
-                <div className="flex items-center gap-2 mb-4">
-                  <Code2 className="h-5 w-5 text-primary" />
-                  <h3 className="font-semibold text-lg">Programming languages</h3>
-                </div>
-                <div className="flex flex-wrap gap-4" role="list">
-                  {programmingLanguages.map((name) => (
-                    <ToolTag key={name} name={name} />
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="border-border bg-card">
-              <CardContent className="p-6">
-                <h3 className="font-semibold text-lg mb-4">Frameworks</h3>
-                <div className="flex flex-wrap gap-4" role="list">
-                  {frameworks.map((name) => (
-                    <ToolTag key={name} name={name} />
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="border-border bg-card">
-              <CardContent className="p-6">
-                <h3 className="font-semibold text-lg mb-4">Other softwares</h3>
-                <div className="flex flex-wrap gap-4" role="list">
-                  {otherSoftware.map((name) => (
-                    <ToolTag key={name} name={name} />
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
+        ))}
       </div>
-    </section>
+    </Section>
   );
 };
 

@@ -8,8 +8,10 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 0 0% 98%;
+    --background: 204 60% 99.2%;
     --foreground: 203 100% 18%;
+    /* Dark ink for section and item headings, so blue stays reserved for links and accents */
+    --heading: 209 52% 16%;
 
     --card: 0 0% 100%;
     --card-foreground: 203 100% 18%;
@@ -35,8 +37,8 @@ All colors MUST be HSL.
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 214 32% 91%;
-    --input: 214 32% 91%;
+    --border: 205 35% 89%;
+    --input: 205 35% 89%;
     --ring: 203 100% 29%;
 
     --radius: 0.75rem;
@@ -68,6 +70,7 @@ All colors MUST be HSL.
   .dark {
     --background: 203 50% 8%;
     --foreground: 200 50% 95%;
+    --heading: 200 50% 95%;
 
     --card: 203 40% 12%;
     --card-foreground: 200 50% 95%;
@@ -113,16 +116,10 @@ All colors MUST be HSL.
 }
 
 @layer base {
-  /* Keep mobile font-size at the browser default (16px) for compact mobile layout,
-     but increase the root font-size on larger screens so rem-based utilities scale up.
-     This preserves the previous mobile sizing while enlarging desktop typography. */
   html {
     font-size: 16px;
-  }
-
-  @media (min-width: 1024px) {
-    /* Desktop and large tablets get a slightly larger base for readability */
-    html { font-size: 18px; }
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
   }
 
   * {
@@ -134,8 +131,13 @@ All colors MUST be HSL.
     font-family: 'Lato', sans-serif;
   }
   
+  /* Offset anchor jumps so the fixed navbar doesn't cover section titles */
+  section[id] {
+    scroll-margin-top: 4rem;
+  }
+
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Patua One', serif;
-    color: hsl(var(--primary));
+    color: hsl(var(--heading));
   }
 }

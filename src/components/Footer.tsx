@@ -1,61 +1,38 @@
-import { Mail, Phone, Linkedin } from "lucide-react";
+import { Linkedin, Mail, Phone } from "lucide-react";
+
+const contacts = [
+  { label: "Organization mail", value: "lcazzola@fbk.eu", href: "mailto:lcazzola@fbk.eu", icon: Mail },
+  { label: "Personal mail", value: "luca.cazzola.2001@gmail.com", href: "mailto:luca.cazzola.2001@gmail.com", icon: Mail },
+  { label: "Mobile", value: "+39 350 032 3641", href: "tel:+393500323641", icon: Phone },
+  { label: "LinkedIn", value: "luca-cazzola-5699a92a9", href: "https://linkedin.com/in/luca-cazzola-5699a92a9", icon: Linkedin, external: true },
+];
 
 const Footer = () => {
   return (
-    <footer id="contact" className="bg-gradient-to-br from-primary to-primary-hover text-primary-foreground py-16">
-      <div className="container mx-auto px-4">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="font-serif text-3xl md:text-4xl mb-8 text-white">Contact me!</h2>
-          
-          <div className="grid md:grid-cols-2 gap-8">
-            <div className="space-y-4">
-              <div>
-                <h4 className="font-semibold text-white/80 mb-2">Organization mail</h4>
-                <a href="mailto:luca.cazzola-1@studenti.unitn.it" className="flex items-center justify-center gap-2 text-white hover:text-white/80 transition-colors">
-                  <Mail className="h-4 w-4" />
-                  luca.cazzola-1@studenti.unitn.it
-                </a>
-              </div>
-              
-              <div>
-                <h4 className="font-semibold text-white/80 mb-2">Personal mail</h4>
-                <a href="mailto:luca.cazzola.2001@gmail.com" className="flex items-center justify-center gap-2 text-white hover:text-white/80 transition-colors">
-                  <Mail className="h-4 w-4" />
-                  luca.cazzola.2001@gmail.com
-                </a>
-              </div>
-            </div>
-            
-            <div className="space-y-4">
-              <div>
-                <h4 className="font-semibold text-white/80 mb-2">Mobile</h4>
-                <a href="tel:+393500323641" className="flex items-center justify-center gap-2 text-white hover:text-white/80 transition-colors">
-                  <Phone className="h-4 w-4" />
-                  +39 350 032 3641
-                </a>
-              </div>
-              
-              <div>
-                <h4 className="font-semibold text-white/80 mb-2">LinkedIn</h4>
-                <a 
-                  href="https://linkedin.com/in/luca-cazzola-5699a92a9" 
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-2 text-white hover:text-white/80 transition-colors"
-                >
-                  <Linkedin className="h-4 w-4" />
-                  luca-cazzola-5699a92a9
-                </a>
-              </div>
-            </div>
-          </div>
-          
-          <div className="mt-12 pt-8 border-t border-white/20">
-            <p className="text-white/60 text-sm">
-              © {new Date().getFullYear()} Luca Cazzola. All rights reserved.
-            </p>
-          </div>
+    <footer id="contact" className="scroll-mt-16 bg-gradient-to-br from-primary to-primary-hover py-8 text-primary-foreground md:py-10">
+      <div className="mx-auto w-full max-w-[60rem] px-4 sm:px-6">
+        <h2 className="mb-5 font-serif text-xl text-white md:text-2xl">Contact me!</h2>
+
+        <div className="grid gap-x-8 gap-y-4 sm:grid-cols-2">
+          {contacts.map(({ label, value, href, icon: Icon, external }) => (
+            <a
+              key={label}
+              href={href}
+              {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+              className="group flex items-center gap-3"
+            >
+              <Icon className="h-5 w-5 shrink-0 text-white/80" aria-hidden="true" />
+              <span className="min-w-0">
+                <span className="block text-xs font-semibold uppercase tracking-wide text-white/70">{label}</span>
+                <span className="block truncate text-sm text-white group-hover:underline">{value}</span>
+              </span>
+            </a>
+          ))}
         </div>
+
+        <p className="mt-6 border-t border-white/20 pt-4 text-xs text-white/60">
+          © {new Date().getFullYear()} Luca Cazzola. All rights reserved.
+        </p>
       </div>
     </footer>
   );

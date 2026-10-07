@@ -10,10 +10,10 @@ const NotFound = () => {
   }, [location.pathname]);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-100">
+    <div className="flex min-h-screen items-center justify-center bg-background">
       <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">404</h1>
-        <p className="mb-4 text-xl text-gray-600">Oops! Page not found</p>
+        <h1 className="mb-4 font-serif text-5xl text-primary">404</h1>
+        <p className="mb-4 text-xl text-muted-foreground">Oops! Page not found</p>
         <a
           href={import.meta.env.BASE_URL}
           onClick={(e) => {
@@ -23,7 +23,7 @@ const NotFound = () => {
             // the raw '/' filesystem path.
             navigate("/", { replace: true });
           }}
-          className="text-blue-500 underline hover:text-blue-700"
+          className="font-semibold text-primary underline hover:text-primary-hover"
         >
           Return to Home
         </a>

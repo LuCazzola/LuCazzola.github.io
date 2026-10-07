@@ -11,7 +11,7 @@ const publication: Publication = {
   affiliations: "University of Trento; CESI LINEACT",
   venue: "ICPR • 28th International Conference on Pattern Recognition",
   year: "2026",
-  arxiv: "https://arxiv.org/abs/2512.11654",
+  paper: "https://arxiv.org/abs/2512.11654",
   image: asset("/media/kinemic/panel_full.png"),
   tags: ["Human Motion Synthesis", "Few-Shot Learning", "Action-to-Motion", "Text-to-Motion", "Human Activity Recognition"],
   abstract: "KineMIC adapts a Text-to-Motion diffusion model to Human Activity Recognition via a kinetic mining strategy that leverages CLIP embeddings to bridge the domain gap between generalist T2M data and sparse HAR labels, delivering a +23.1% accuracy improvement.",

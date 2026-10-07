@@ -1,36 +1,24 @@
-import Navbar from "@/components/Navbar";
-import ProjectCard from "@/components/ProjectCard";
-import Footer from "@/components/Footer";
 import { Rocket } from "lucide-react";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import Section from "@/components/Section";
+import ProjectCard from "@/components/ProjectCard";
 import { getProjects } from "@/data/projects";
 
-const Projects = () => {
-  return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
-      
-      <div className="pt-24 pb-16">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center gap-3 mb-12">
-            <Rocket className="h-8 w-8 text-primary" />
-            <h1 className="font-serif text-3xl md:text-4xl text-primary">
-              All Projects
-            </h1>
-          </div>
-          
-          <div className="space-y-8 max-w-6xl mx-auto">
-            {getProjects().map((project, index) => (
-              <div key={project.id} className="animate-fade-in" style={{ animationDelay: `${index * 0.1}s` }}>
-                <ProjectCard {...project} projectUrl={`/projects/${project.id}`} />
-              </div>
-            ))}
-          </div>
+const Projects = () => (
+  <div className="min-h-screen bg-background">
+    <Navbar />
+    <main className="pt-14">
+      <Section title="All projects" icon={Rocket}>
+        <div className="divide-y divide-border border-t border-border">
+          {getProjects().map((project) => (
+            <ProjectCard key={project.id} {...project} projectUrl={`/projects/${project.id}`} />
+          ))}
         </div>
-      </div>
-
-      <Footer />
-    </div>
-  );
-};
+      </Section>
+    </main>
+    <Footer />
+  </div>
+);
 
 export default Projects;
